@@ -24,6 +24,7 @@ test('test', async () => {
       },
     ],
     defaultDecorator: 'swagger1',
+    addRoute: false,
   })
 
   fastify.get('/', () => {
@@ -34,4 +35,5 @@ test('test', async () => {
 
   console.log(fastify.swagger1())
   console.log(fastify.swagger2())
+  console.log(fastify.printRoutes())
 })

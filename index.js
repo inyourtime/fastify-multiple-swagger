@@ -16,6 +16,12 @@ async function plugin(fastify, opts) {
       defaultDecorator: opts.defaultDecorator,
     })
   }
+
+  if (opts.addRoute !== false) {
+    await fastify.register(require('./lib/route'), {
+      ...opts,
+    })
+  }
 }
 
 /** exports */
