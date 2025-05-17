@@ -10,16 +10,19 @@ async function plugin(fastify, opts) {
     throw new TypeError('"documents" option must be an array')
   }
 
-  for (const documentOptions of opts.documents) {
+  for (const [index, documentOptions] of opts.documents.entries()) {
+    // register swagger instance
     await fastify.register(require('./lib/swagger'), {
       ...documentOptions,
       defaultDecorator: opts.defaultDecorator,
     })
-  }
 
-  if (opts.addRoute !== false) {
+    // register route for json/yaml
     await fastify.register(require('./lib/route'), {
       ...opts,
+      prefix: opts.routePrefix,
+      ...documentOptions,
+      documentIndex: index,
     })
   }
 }

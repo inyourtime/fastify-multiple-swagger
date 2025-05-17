@@ -18,13 +18,17 @@ test('test', async () => {
             },
           },
         },
+        publish: {
+          json: '/swagger1.json',
+          yaml: true,
+        },
       },
       {
         decorator: 'swagger2',
       },
     ],
     defaultDecorator: 'swagger1',
-    addRoute: false,
+    routePrefix : '/doc',
   })
 
   fastify.get('/', () => {
