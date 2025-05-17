@@ -3,28 +3,35 @@
 const fp = require('fastify-plugin')
 
 /**
- * @type {import('fastify').FastifyPluginAsync<>}
+ * @type {import('fastify').FastifyPluginCallback<>}
  */
-async function plugin(fastify, opts) {
+function plugin(fastify, opts, next) {
   if (!Array.isArray(opts.documents)) {
-    throw new TypeError('"documents" option must be an array')
+    return next(new TypeError('"documents" option must be an array'))
   }
 
-  for (const [index, documentOptions] of opts.documents.entries()) {
-    // register swagger instance
-    await fastify.register(require('./lib/swagger'), {
-      ...documentOptions,
+  for (let index = 0; index < opts.documents.length; index++) {
+    const documentOptions = opts.documents[index]
+
+    const normalizedOptions =
+      typeof documentOptions === 'string' ? { decorator: documentOptions } : documentOptions
+
+    // Register swagger instance
+    fastify.register(require('./lib/swagger'), {
+      ...normalizedOptions,
       defaultDecorator: opts.defaultDecorator,
     })
 
-    // register route for json/yaml
-    await fastify.register(require('./lib/route'), {
+    // Register route for json/yaml
+    fastify.register(require('./lib/route'), {
       ...opts,
       prefix: opts.routePrefix,
-      ...documentOptions,
+      ...normalizedOptions,
       documentIndex: index,
     })
   }
+
+  next()
 }
 
 /** exports */

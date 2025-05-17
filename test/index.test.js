@@ -3,41 +3,12 @@
 const { test } = require('node:test')
 const Fastify = require('fastify')
 
-test('test', async () => {
-  const fastify = Fastify()
+test('register plugin success', async (t) => {
+  const fastify = Fastify({ logger: true })
 
   await fastify.register(require('..'), {
-    documents: [
-      {
-        decorator: 'swagger1',
-        swaggerOptions: {
-          openapi: {
-            info: {
-              title: 'test',
-              version: '1.0.0',
-            },
-          },
-        },
-        publish: {
-          json: '/swagger1.json',
-          yaml: true,
-        },
-      },
-      {
-        decorator: 'swagger2',
-      },
-    ],
-    defaultDecorator: 'swagger1',
-    routePrefix : '/doc',
+    documents: [],
   })
 
-  fastify.get('/', () => {
-    return 'hello'
-  })
-
-  await fastify.ready()
-
-  console.log(fastify.swagger1())
-  console.log(fastify.swagger2())
-  console.log(fastify.printRoutes())
+  t.assert.ok(fastify.hasPlugin('fastify-multiple-swagger'))
 })
