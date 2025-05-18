@@ -6,6 +6,7 @@ const Swagger = require('@apidevtools/swagger-parser')
 const yaml = require('yaml')
 
 test('register plugin success', async (t) => {
+  t.plan(1)
   const fastify = Fastify()
 
   await fastify.register(require('..'), { documents: [] })
@@ -14,6 +15,7 @@ test('register plugin success', async (t) => {
 })
 
 test('should generate multiple documents #decorator', async (t) => {
+  t.plan(8)
   const fastify = Fastify()
   t.after(() => fastify.close())
 
@@ -61,6 +63,7 @@ test('should generate multiple documents #decorator', async (t) => {
 })
 
 test('should generate multiple documents #endpoint', async (t) => {
+  t.plan(5)
   const fastify = Fastify()
   t.after(() => fastify.close())
 
@@ -110,6 +113,7 @@ test('should generate multiple documents #endpoint', async (t) => {
 })
 
 test('invalid "documents" option #1', async (t) => {
+  t.plan(2)
   const fastify = Fastify()
 
   try {
@@ -121,6 +125,7 @@ test('invalid "documents" option #1', async (t) => {
 })
 
 test('invalid "documents" option #2', async (t) => {
+  t.plan(2)
   const fastify = Fastify()
 
   try {
@@ -132,6 +137,7 @@ test('invalid "documents" option #2', async (t) => {
 })
 
 test('"publish" option is false', async (t) => {
+  t.plan(2)
   const fastify = Fastify()
   t.after(() => fastify.close())
 
@@ -144,6 +150,7 @@ test('"publish" option is false', async (t) => {
 })
 
 test('"publish" option is object', async (t) => {
+  t.plan(2)
   const fastify = Fastify()
   t.after(() => fastify.close())
 
@@ -158,6 +165,7 @@ test('"publish" option is object', async (t) => {
 })
 
 test('"publish" option with route url', async (t) => {
+  t.plan(2)
   const fastify = Fastify()
   t.after(() => fastify.close())
 
@@ -172,6 +180,7 @@ test('"publish" option with route url', async (t) => {
 })
 
 test('provide "routePrefix" option', async (t) => {
+  t.plan(2)
   const fastify = Fastify()
   t.after(() => fastify.close())
 
@@ -187,6 +196,7 @@ test('provide "routePrefix" option', async (t) => {
 })
 
 test('invalid "decorator" option', async (t) => {
+  t.plan(2)
   const fastify = Fastify()
 
   try {
@@ -198,6 +208,7 @@ test('invalid "decorator" option', async (t) => {
 })
 
 test('duplicate "decorator" option', async (t) => {
+  t.plan(2)
   const fastify = Fastify()
 
   try {
@@ -211,6 +222,7 @@ test('duplicate "decorator" option', async (t) => {
 })
 
 test('invalid "defaultDecorator" option', async (t) => {
+  t.plan(2)
   const fastify = Fastify()
 
   try {
@@ -225,6 +237,7 @@ test('invalid "defaultDecorator" option', async (t) => {
 })
 
 test('should work with "defaultDecorator"', async (t) => {
+  t.plan(1)
   const fastify = Fastify()
   t.after(() => fastify.close())
 
@@ -249,6 +262,7 @@ test('should work with "defaultDecorator"', async (t) => {
 })
 
 test('should work with swagger transform', async (t) => {
+  t.plan(4)
   const fastify = Fastify()
   t.after(() => fastify.close())
 
@@ -269,4 +283,64 @@ test('should work with swagger transform', async (t) => {
 
   await fastify.ready()
   await Swagger.validate(fastify.foo())
+})
+
+test('should have decorator getDocumentSources', async (t) => {
+  t.plan(3)
+  const fastify = Fastify()
+  t.after(() => fastify.close())
+
+  await fastify.register(require('..'), {
+    documents: [{ decorator: 'foo', publish: { json: '/swagger.json', yaml: '/swagger.yaml' } }],
+  })
+
+  await fastify.ready()
+
+  const source = fastify.getDocumentSources()[0]
+  t.assert.equal(source.decorator, 'foo')
+  t.assert.equal(source.json, '/swagger.json')
+  t.assert.equal(source.yaml, '/swagger.yaml')
+})
+
+test('routePrefix end with slash', async (t) => {
+  t.plan(5)
+  const fastify = Fastify()
+  t.after(() => fastify.close())
+
+  await fastify.register(require('..'), {
+    documents: [{ decorator: 'foo', publish: { json: '/swagger.json', yaml: '/swagger.yaml' } }],
+    routePrefix: '/docs/',
+  })
+
+  await fastify.ready()
+
+  t.assert.equal(fastify.hasRoute({ method: 'GET', url: '/docs/swagger.json' }), true)
+  t.assert.equal(fastify.hasRoute({ method: 'GET', url: '/docs/swagger.yaml' }), true)
+
+  const source = fastify.getDocumentSources()[0]
+  t.assert.equal(source.decorator, 'foo')
+  t.assert.equal(source.json, '/docs/swagger.json')
+  t.assert.equal(source.yaml, '/docs/swagger.yaml')
+})
+
+test('getDocumentSources with no publish', async (t) => {
+  t.plan(5)
+  const fastify = Fastify()
+  t.after(() => fastify.close())
+
+  await fastify.register(require('..'), {
+    documents: [{ decorator: 'foo', publish: false }],
+  })
+
+  await fastify.ready()
+
+  await Swagger.validate(fastify.foo())
+
+  t.assert.equal(fastify.hasRoute({ method: 'GET', url: '/doc-0/json' }), false)
+  t.assert.equal(fastify.hasRoute({ method: 'GET', url: '/doc-0/yaml' }), false)
+
+  const source = fastify.getDocumentSources()[0]
+  t.assert.equal(source.decorator, 'foo')
+  t.assert.equal(source.json, null)
+  t.assert.equal(source.yaml, null)
 })
