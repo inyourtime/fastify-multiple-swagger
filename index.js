@@ -4,7 +4,7 @@ const fp = require('fastify-plugin')
 const { getPublishOptions } = require('./lib/utils')
 
 /**
- * @type {import('fastify').FastifyPluginCallback<>}
+ * @type {import('fastify').FastifyPluginCallback<import('.').FastifyMultipleSwaggerOptions>}
  */
 function plugin(fastify, opts, next) {
   if (!Array.isArray(opts.documents)) {
@@ -65,6 +65,12 @@ function plugin(fastify, opts, next) {
   next()
 }
 
+/**
+ * Add route prefix to the given url.
+ * @param {string} routePrefix - the prefix
+ * @param {string} url - the url
+ * @returns {string} url with prefix
+ */
 function withPrefix(routePrefix, url) {
   const prefix = routePrefix.endsWith('/') ? routePrefix.slice(0, -1) : routePrefix
   return `${prefix}${url}`

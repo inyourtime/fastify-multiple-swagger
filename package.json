@@ -4,7 +4,7 @@
   "description": "A Fastify plugin for generating multiple Swagger/OpenAPI documents using @fastify/swagger.",
   "type": "commonjs",
   "main": "index.js",
-  "types": "types/index.d.ts",
+  "types": "index.d.ts",
   "scripts": {
     "lint": "biome lint",
     "lint:fix": "biome check --write",
