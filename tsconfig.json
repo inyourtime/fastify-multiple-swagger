@@ -1,0 +1,16 @@
+{
+  "compilerOptions": {
+    "allowImportingTsExtensions": false,
+    "allowJs": false,
+    "checkJs": false,
+    "exactOptionalPropertyTypes": true,
+    "jsx": "preserve",
+    "module": "nodenext",
+    "moduleResolution": "nodenext",
+    "noUncheckedIndexedAccess": true,
+    "resolveJsonModule": true,
+    "strict": true,
+    "target": "esnext",
+    "verbatimModuleSyntax": false
+  }
+}
