@@ -4,6 +4,20 @@ import type {
   FastifyDynamicSwaggerOptions,
 } from "@fastify/swagger";
 
+declare module "fastify" {
+  interface FastifyInstance {
+    getDocumentSources: () => Array<{
+      decorator: string;
+      json: string | null;
+      yaml: string | null;
+    }>;
+  }
+
+  interface FastifyContextConfig {
+    swaggerDecorator?: string;
+  }
+}
+
 type FastifyMultipleSwagger =
   FastifyPluginAsync<fastifyMultipleSwagger.FastifyMultipleSwaggerOptions>;
 
