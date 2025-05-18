@@ -16,6 +16,10 @@ function plugin(fastify, opts, next) {
     const normalizedOptions =
       typeof documentOptions === 'string' ? { decorator: documentOptions } : documentOptions
 
+    if (typeof normalizedOptions !== 'object') {
+      return next(new TypeError('"documents" option must be an array of objects or strings'))
+    }
+
     // Register swagger instance
     fastify.register(require('./lib/swagger'), {
       ...normalizedOptions,
