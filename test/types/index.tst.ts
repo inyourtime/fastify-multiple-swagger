@@ -5,6 +5,7 @@ import type {
   FastifyMultipleSwaggerOptions,
   SwaggerDocument,
   DocumentSource,
+  ScalarDocumentSource,
 } from "../..";
 
 const app = Fastify();
@@ -40,6 +41,10 @@ app.register(fastifyMultipleSwagger, {
       exposeRoute: {
         json: true,
         yaml: false,
+      },
+      meta: {
+        title: "Foo",
+        slug: "foo",
       },
     },
   ],
@@ -111,3 +116,6 @@ app.route({
 });
 
 expect<Array<DocumentSource>>().type.toBe(app.getDocumentSources());
+expect<Array<ScalarDocumentSource>>().type.toBe(
+  app.getDocumentSources({ scalar: true })
+);

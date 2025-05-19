@@ -386,3 +386,38 @@ test('routePrefix each document', async (t) => {
   t.assert.strictEqual(sources[1].json, '/internal/bar.json')
   t.assert.strictEqual(sources[1].yaml, '/internal/bar.yaml')
 })
+
+test('getDocumentSources with scalar option', async (t) => {
+  t.plan(6)
+  const fastify = Fastify()
+  t.after(() => fastify.close())
+
+  await fastify.register(require('..'), {
+    documents: [
+      {
+        decorator: 'foo',
+        exposeRoute: { json: '/swagger.json', yaml: '/swagger.yaml' },
+        routePrefix: '/foo',
+        meta: {
+          title: "Foo's API",
+          slug: 'foo',
+        },
+      },
+      {
+        decorator: 'bar',
+        exposeRoute: { json: '/swagger.json', yaml: '/swagger.yaml' },
+        routePrefix: '/bar',
+      },
+    ],
+  })
+
+  await fastify.ready()
+
+  const sources = fastify.getDocumentSources({ scalar: true })
+  t.assert.strictEqual(sources[0].url, '/foo/swagger.json')
+  t.assert.strictEqual(sources[0].title, "Foo's API")
+  t.assert.strictEqual(sources[0].slug, 'foo')
+  t.assert.strictEqual(sources[1].url, '/bar/swagger.json')
+  t.assert.strictEqual(sources[1].title, undefined)
+  t.assert.strictEqual(sources[1].slug, undefined)
+})
