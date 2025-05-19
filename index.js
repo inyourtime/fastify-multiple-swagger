@@ -1,7 +1,7 @@
 'use strict'
 
 const fp = require('fastify-plugin')
-const { getPublishOptions } = require('./lib/utils')
+const { getExposeRouteOptions } = require('./lib/utils')
 
 /**
  * @type {import('fastify').FastifyPluginCallback<import('.').FastifyMultipleSwaggerOptions>}
@@ -29,15 +29,17 @@ function plugin(fastify, opts, next) {
       defaultDecorator: opts.defaultDecorator,
     })
 
-    const publish = getPublishOptions(normalizedOptions.publish)
-    const jsonPath = typeof publish.json === 'string' ? publish.json : `/doc-${index}/json`
-    const yamlPath = typeof publish.yaml === 'string' ? publish.yaml : `/doc-${index}/yaml`
+    const exposeRoute = getExposeRouteOptions(normalizedOptions.exposeRoute)
+    const jsonPath = typeof exposeRoute.json === 'string' ? exposeRoute.json : `/doc-${index}/json`
+    const yamlPath = typeof exposeRoute.yaml === 'string' ? exposeRoute.yaml : `/doc-${index}/yaml`
+
+    const routePrefix = normalizedOptions.routePrefix || opts.routePrefix
 
     // Register route for json/yaml
     fastify.register(require('./lib/route'), {
       ...opts,
-      prefix: opts.routePrefix,
-      publish,
+      prefix: routePrefix,
+      exposeRoute,
       jsonPath,
       yamlPath,
       decorator: normalizedOptions.decorator,
@@ -45,16 +47,8 @@ function plugin(fastify, opts, next) {
 
     const documentSource = {
       decorator: normalizedOptions.decorator,
-      json: publish.json
-        ? opts.routePrefix
-          ? withPrefix(opts.routePrefix, jsonPath)
-          : jsonPath
-        : null,
-      yaml: publish.yaml
-        ? opts.routePrefix
-          ? withPrefix(opts.routePrefix, yamlPath)
-          : yamlPath
-        : null,
+      json: exposeRoute.json ? (routePrefix ? withPrefix(routePrefix, jsonPath) : jsonPath) : null,
+      yaml: exposeRoute.yaml ? (routePrefix ? withPrefix(routePrefix, yamlPath) : yamlPath) : null,
     }
 
     documentSources.push(documentSource)

@@ -6,11 +6,7 @@ import type {
 
 declare module "fastify" {
   interface FastifyInstance {
-    getDocumentSources: () => Array<{
-      decorator: string;
-      json: string | null;
-      yaml: string | null;
-    }>;
+    getDocumentSources: () => Array<fastifyMultipleSwagger.DocumentSource>;
   }
 
   interface FastifyContextConfig {
@@ -34,16 +30,23 @@ declare namespace fastifyMultipleSwagger {
 
   export interface SwaggerDocument {
     decorator: string;
-    publish?: PublishOptions;
+    exposeRoute?: ExposeRouteOptions;
     swaggerOptions?: SwaggerOptions;
+    routePrefix?: string;
   }
 
-  export type PublishOptions =
+  export type ExposeRouteOptions =
     | {
         json?: string | boolean;
         yaml?: string | boolean;
       }
     | boolean;
+
+  export type DocumentSource = {
+    decorator: string;
+    json: string | null;
+    yaml: string | null;
+  };
 
   export const fastifyMultipleSwagger: FastifyMultipleSwagger;
   export { fastifyMultipleSwagger as default };

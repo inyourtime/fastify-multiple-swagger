@@ -136,47 +136,49 @@ test('invalid "documents" option #2', async (t) => {
   }
 })
 
-test('"publish" option is false', async (t) => {
+test('"exposeRoute" option is false', async (t) => {
   t.plan(2)
   const fastify = Fastify()
   t.after(() => fastify.close())
 
-  await fastify.register(require('..'), { documents: [{ decorator: 'foo', publish: false }] })
+  await fastify.register(require('..'), { documents: [{ decorator: 'foo', exposeRoute: false }] })
 
   await fastify.ready()
 
-  t.assert.equal(fastify.hasRoute({ method: 'GET', url: '/doc-0/json' }), false)
-  t.assert.equal(fastify.hasRoute({ method: 'GET', url: '/doc-0/yaml' }), false)
+  t.assert.strictEqual(fastify.hasRoute({ method: 'GET', url: '/doc-0/json' }), false)
+  t.assert.strictEqual(fastify.hasRoute({ method: 'GET', url: '/doc-0/yaml' }), false)
 })
 
-test('"publish" option is object', async (t) => {
+test('"exposeRoute" option is object', async (t) => {
   t.plan(2)
   const fastify = Fastify()
   t.after(() => fastify.close())
 
   await fastify.register(require('..'), {
-    documents: [{ decorator: 'foo', publish: { json: false, yaml: true } }],
+    documents: [{ decorator: 'foo', exposeRoute: { json: false, yaml: true } }],
   })
 
   await fastify.ready()
 
-  t.assert.equal(fastify.hasRoute({ method: 'GET', url: '/doc-0/json' }), false)
-  t.assert.equal(fastify.hasRoute({ method: 'GET', url: '/doc-0/yaml' }), true)
+  t.assert.strictEqual(fastify.hasRoute({ method: 'GET', url: '/doc-0/json' }), false)
+  t.assert.strictEqual(fastify.hasRoute({ method: 'GET', url: '/doc-0/yaml' }), true)
 })
 
-test('"publish" option with route url', async (t) => {
+test('"exposeRoute" option with route url', async (t) => {
   t.plan(2)
   const fastify = Fastify()
   t.after(() => fastify.close())
 
   await fastify.register(require('..'), {
-    documents: [{ decorator: 'foo', publish: { json: '/swagger.json', yaml: '/swagger.yaml' } }],
+    documents: [
+      { decorator: 'foo', exposeRoute: { json: '/swagger.json', yaml: '/swagger.yaml' } },
+    ],
   })
 
   await fastify.ready()
 
-  t.assert.equal(fastify.hasRoute({ method: 'GET', url: '/swagger.json' }), true)
-  t.assert.equal(fastify.hasRoute({ method: 'GET', url: '/swagger.yaml' }), true)
+  t.assert.strictEqual(fastify.hasRoute({ method: 'GET', url: '/swagger.json' }), true)
+  t.assert.strictEqual(fastify.hasRoute({ method: 'GET', url: '/swagger.yaml' }), true)
 })
 
 test('provide "routePrefix" option', async (t) => {
@@ -185,14 +187,16 @@ test('provide "routePrefix" option', async (t) => {
   t.after(() => fastify.close())
 
   await fastify.register(require('..'), {
-    documents: [{ decorator: 'foo', publish: { json: '/swagger.json', yaml: '/swagger.yaml' } }],
+    documents: [
+      { decorator: 'foo', exposeRoute: { json: '/swagger.json', yaml: '/swagger.yaml' } },
+    ],
     routePrefix: '/docs',
   })
 
   await fastify.ready()
 
-  t.assert.equal(fastify.hasRoute({ method: 'GET', url: '/docs/swagger.json' }), true)
-  t.assert.equal(fastify.hasRoute({ method: 'GET', url: '/docs/swagger.yaml' }), true)
+  t.assert.strictEqual(fastify.hasRoute({ method: 'GET', url: '/docs/swagger.json' }), true)
+  t.assert.strictEqual(fastify.hasRoute({ method: 'GET', url: '/docs/swagger.yaml' }), true)
 })
 
 test('invalid "decorator" option', async (t) => {
@@ -291,15 +295,17 @@ test('should have decorator getDocumentSources', async (t) => {
   t.after(() => fastify.close())
 
   await fastify.register(require('..'), {
-    documents: [{ decorator: 'foo', publish: { json: '/swagger.json', yaml: '/swagger.yaml' } }],
+    documents: [
+      { decorator: 'foo', exposeRoute: { json: '/swagger.json', yaml: '/swagger.yaml' } },
+    ],
   })
 
   await fastify.ready()
 
   const source = fastify.getDocumentSources()[0]
-  t.assert.equal(source.decorator, 'foo')
-  t.assert.equal(source.json, '/swagger.json')
-  t.assert.equal(source.yaml, '/swagger.yaml')
+  t.assert.strictEqual(source.decorator, 'foo')
+  t.assert.strictEqual(source.json, '/swagger.json')
+  t.assert.strictEqual(source.yaml, '/swagger.yaml')
 })
 
 test('routePrefix end with slash', async (t) => {
@@ -308,39 +314,75 @@ test('routePrefix end with slash', async (t) => {
   t.after(() => fastify.close())
 
   await fastify.register(require('..'), {
-    documents: [{ decorator: 'foo', publish: { json: '/swagger.json', yaml: '/swagger.yaml' } }],
+    documents: [
+      { decorator: 'foo', exposeRoute: { json: '/swagger.json', yaml: '/swagger.yaml' } },
+    ],
     routePrefix: '/docs/',
   })
 
   await fastify.ready()
 
-  t.assert.equal(fastify.hasRoute({ method: 'GET', url: '/docs/swagger.json' }), true)
-  t.assert.equal(fastify.hasRoute({ method: 'GET', url: '/docs/swagger.yaml' }), true)
+  t.assert.strictEqual(fastify.hasRoute({ method: 'GET', url: '/docs/swagger.json' }), true)
+  t.assert.strictEqual(fastify.hasRoute({ method: 'GET', url: '/docs/swagger.yaml' }), true)
 
   const source = fastify.getDocumentSources()[0]
-  t.assert.equal(source.decorator, 'foo')
-  t.assert.equal(source.json, '/docs/swagger.json')
-  t.assert.equal(source.yaml, '/docs/swagger.yaml')
+  t.assert.strictEqual(source.decorator, 'foo')
+  t.assert.strictEqual(source.json, '/docs/swagger.json')
+  t.assert.strictEqual(source.yaml, '/docs/swagger.yaml')
 })
 
-test('getDocumentSources with no publish', async (t) => {
+test('getDocumentSources with no exposeRoute', async (t) => {
   t.plan(5)
   const fastify = Fastify()
   t.after(() => fastify.close())
 
   await fastify.register(require('..'), {
-    documents: [{ decorator: 'foo', publish: false }],
+    documents: [{ decorator: 'foo', exposeRoute: false }],
   })
 
   await fastify.ready()
 
   await Swagger.validate(fastify.foo())
 
-  t.assert.equal(fastify.hasRoute({ method: 'GET', url: '/doc-0/json' }), false)
-  t.assert.equal(fastify.hasRoute({ method: 'GET', url: '/doc-0/yaml' }), false)
+  t.assert.strictEqual(fastify.hasRoute({ method: 'GET', url: '/doc-0/json' }), false)
+  t.assert.strictEqual(fastify.hasRoute({ method: 'GET', url: '/doc-0/yaml' }), false)
 
   const source = fastify.getDocumentSources()[0]
-  t.assert.equal(source.decorator, 'foo')
-  t.assert.equal(source.json, null)
-  t.assert.equal(source.yaml, null)
+  t.assert.strictEqual(source.decorator, 'foo')
+  t.assert.strictEqual(source.json, null)
+  t.assert.strictEqual(source.yaml, null)
+})
+
+test('routePrefix each document', async (t) => {
+  t.plan(11)
+  const fastify = Fastify()
+  t.after(() => fastify.close())
+
+  await fastify.register(require('..'), {
+    documents: [
+      {
+        decorator: 'foo',
+        exposeRoute: { json: '/foo.json', yaml: '/foo.yaml' },
+        routePrefix: '/external',
+      },
+      { decorator: 'bar', exposeRoute: { json: '/bar.json', yaml: '/bar.yaml' } },
+    ],
+    routePrefix: '/internal',
+  })
+
+  await fastify.ready()
+
+  t.assert.strictEqual(fastify.hasRoute({ method: 'GET', url: '/external/foo.json' }), true)
+  t.assert.strictEqual(fastify.hasRoute({ method: 'GET', url: '/external/foo.yaml' }), true)
+  t.assert.strictEqual(fastify.hasRoute({ method: 'GET', url: '/internal/bar.json' }), true)
+  t.assert.strictEqual(fastify.hasRoute({ method: 'GET', url: '/internal/bar.yaml' }), true)
+
+  const sources = fastify.getDocumentSources()
+  t.assert.strictEqual(sources.length, 2)
+  t.assert.strictEqual(sources[0].decorator, 'foo')
+  t.assert.strictEqual(sources[0].json, '/external/foo.json')
+  t.assert.strictEqual(sources[0].yaml, '/external/foo.yaml')
+  t.assert.strictEqual(sources[1].decorator, 'bar')
+  t.assert.strictEqual(sources[1].json, '/internal/bar.json')
+  t.assert.strictEqual(sources[1].yaml, '/internal/bar.yaml')
 })

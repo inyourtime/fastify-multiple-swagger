@@ -1,7 +1,11 @@
 import Fastify from "fastify";
 import { expect } from "tstyche";
 import fastifyMultipleSwagger from "../..";
-import type { FastifyMultipleSwaggerOptions, SwaggerDocument } from "../..";
+import type {
+  FastifyMultipleSwaggerOptions,
+  SwaggerDocument,
+  DocumentSource,
+} from "../..";
 
 const app = Fastify();
 
@@ -17,7 +21,7 @@ app.register(fastifyMultipleSwagger, {
   documents: [
     {
       decorator: "foo",
-      publish: false,
+      exposeRoute: false,
       swaggerOptions: {
         openapi: {
           info: {
@@ -33,7 +37,7 @@ app.register(fastifyMultipleSwagger, {
   documents: [
     {
       decorator: "foo",
-      publish: {
+      exposeRoute: {
         json: true,
         yaml: false,
       },
@@ -44,10 +48,11 @@ app.register(fastifyMultipleSwagger, {
   documents: [
     {
       decorator: "foo",
-      publish: {
+      exposeRoute: {
         json: "/swagger.json",
         yaml: "/swagger.yaml",
       },
+      routePrefix: "/doc",
     },
   ],
 });
@@ -59,7 +64,7 @@ app.register(fastifyMultipleSwagger, {
 
 const swaggerOption: SwaggerDocument = {
   decorator: "foo",
-  publish: false,
+  exposeRoute: false,
   swaggerOptions: {
     openapi: {
       info: {
@@ -105,10 +110,4 @@ app.route({
   handler: () => {},
 });
 
-expect<
-  Array<{
-    decorator: string;
-    json: string | null;
-    yaml: string | null;
-  }>
->().type.toBe(app.getDocumentSources());
+expect<Array<DocumentSource>>().type.toBe(app.getDocumentSources());
