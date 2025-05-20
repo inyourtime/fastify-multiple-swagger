@@ -44,5 +44,10 @@
     "tstyche": "^4.0.0-rc.0",
     "typescript": "^5.8.3",
     "yaml": "^2.8.0"
-  }
+  },
+  "files": [
+    "lib",
+    "index.js",
+    "index.d.ts"
+  ]
 }
