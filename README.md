@@ -7,7 +7,7 @@ A Fastify plugin for generating multiple Swagger/OpenAPI documents using [@fasti
 - Generate multiple Swagger/OpenAPI documents
 - Support for both JSON and YAML formats
 - Customizable route prefixes and document names
-- Integration with Swagger UI and Scalar API Reference
+- Integration with `Scalar API Reference` and `Swagger UI`
 - TypeScript support
 - Configurable document exposure options
 
@@ -79,36 +79,6 @@ app.get('/external/route', {
 }, handler)
 ```
 
-### Integration with Swagger UI
-
-```javascript
-import SwaggerUI from '@fastify/swagger-ui'
-
-await app.register(fastifyMultipleSwagger, {
-  documents: [
-    {
-      decorator: 'internal',
-      name: 'Internal API',
-      swaggerOptions: {
-        openapi: {
-          info: {
-            title: 'Internal API',
-            version: '1.0.0'
-          }
-        }
-      }
-    }
-  ]
-})
-
-await app.register(SwaggerUI, {
-  routePrefix: '/reference',
-  uiConfig: {
-    urls: app.getDocumentSources({ swaggerUI: true })
-  }
-})
-```
-
 ### Integration with Scalar API Reference
 
 ```javascript
@@ -138,6 +108,36 @@ await app.register(Scalar, {
   routePrefix: '/reference',
   configuration: {
     sources: app.getDocumentSources({ scalar: true })
+  }
+})
+```
+
+### Integration with Swagger UI
+
+```javascript
+import SwaggerUI from '@fastify/swagger-ui'
+
+await app.register(fastifyMultipleSwagger, {
+  documents: [
+    {
+      decorator: 'internal',
+      name: 'Internal API',
+      swaggerOptions: {
+        openapi: {
+          info: {
+            title: 'Internal API',
+            version: '1.0.0'
+          }
+        }
+      }
+    }
+  ]
+})
+
+await app.register(SwaggerUI, {
+  routePrefix: '/reference',
+  uiConfig: {
+    urls: app.getDocumentSources({ swaggerUI: true })
   }
 })
 ```
