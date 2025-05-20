@@ -36,6 +36,7 @@
   "devDependencies": {
     "@apidevtools/swagger-parser": "^10.1.1",
     "@biomejs/biome": "^1.9.4",
+    "@fastify/swagger-ui": "^5.2.2",
     "@scalar/fastify-api-reference": "^1.28.34",
     "@types/node": "^22.15.18",
     "c8": "^10.1.3",

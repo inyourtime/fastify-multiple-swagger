@@ -33,7 +33,7 @@ test('should work with scalar #default config', async (t) => {
 })
 
 test('should work with scalar #custom config', async (t) => {
-  t.plan(7)
+  t.plan(8)
   const fastify = Fastify()
   t.after(() => fastify.close())
 
@@ -42,7 +42,8 @@ test('should work with scalar #custom config', async (t) => {
       {
         decorator: 'swagger1',
         exposeRoute: { json: '/swagger1.json' },
-        meta: { title: 'Swagger 1' },
+        name: 'Swagger 1',
+        meta: { default: true },
       },
       {
         decorator: 'swagger2',
@@ -72,4 +73,5 @@ test('should work with scalar #custom config', async (t) => {
   t.assert.match(responseText, /"url": "\/swagger2\.json"/)
   t.assert.match(responseText, /"slug": "swagger-2"/)
   t.assert.match(responseText, /"title": "Swagger 1"/)
+  t.assert.match(responseText, /"default": true/)
 })

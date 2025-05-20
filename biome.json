@@ -24,7 +24,8 @@
     "rules": {
       "recommended": true,
       "suspicious": {
-        "noRedundantUseStrict": "off"
+        "noRedundantUseStrict": "off",
+        "noExplicitAny": "off"
       },
       "correctness": {
         "noUnusedVariables": "warn"
