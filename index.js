@@ -49,6 +49,7 @@ function plugin(fastify, opts, next) {
       decorator: normalizedOptions.decorator,
       json: exposeRoute.json ? (routePrefix ? withPrefix(routePrefix, jsonPath) : jsonPath) : null,
       yaml: exposeRoute.yaml ? (routePrefix ? withPrefix(routePrefix, yamlPath) : yamlPath) : null,
+      name: normalizedOptions.name,
       meta: normalizedOptions.meta,
     }
 
@@ -56,9 +57,20 @@ function plugin(fastify, opts, next) {
   }
 
   fastify.decorate('getDocumentSources', (sourceOptions) => {
-    if (typeof sourceOptions === 'object' && sourceOptions.scalar === true) {
+    if (typeof sourceOptions !== 'object') return documentSources
+
+    if (sourceOptions.scalar === true) {
       return documentSources.map((source) => ({
         url: source.json,
+        title: source.name,
+        ...source.meta,
+      }))
+    }
+
+    if (sourceOptions.swaggerUI === true) {
+      return documentSources.map((source) => ({
+        url: source.json,
+        name: source.name,
         ...source.meta,
       }))
     }

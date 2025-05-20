@@ -6,6 +6,7 @@ import type {
   SwaggerDocument,
   DocumentSource,
   ScalarDocumentSource,
+  SwaggerUIDocumentSource,
 } from "../..";
 
 const app = Fastify();
@@ -42,8 +43,9 @@ app.register(fastifyMultipleSwagger, {
         json: true,
         yaml: false,
       },
+      name: "foo",
       meta: {
-        title: "Foo",
+        default: true,
         slug: "foo",
       },
     },
@@ -119,3 +121,10 @@ expect<Array<DocumentSource>>().type.toBe(app.getDocumentSources());
 expect<Array<ScalarDocumentSource>>().type.toBe(
   app.getDocumentSources({ scalar: true })
 );
+expect<Array<SwaggerUIDocumentSource>>().type.toBe(
+  app.getDocumentSources({ swaggerUI: true })
+);
+expect(
+  app.getDocumentSources({ scalar: true, swaggerUI: true })
+).type.toRaiseError();
+expect(app.getDocumentSources({ scalar: false })).type.toRaiseError();

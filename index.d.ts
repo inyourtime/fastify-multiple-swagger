@@ -9,7 +9,10 @@ declare module "fastify" {
     getDocumentSources: (() => Array<fastifyMultipleSwagger.DocumentSource>) &
       ((opts: {
         scalar: true;
-      }) => Array<fastifyMultipleSwagger.ScalarDocumentSource>);
+      }) => Array<fastifyMultipleSwagger.ScalarDocumentSource>) &
+      ((opts: {
+        swaggerUI: true;
+      }) => Array<fastifyMultipleSwagger.SwaggerUIDocumentSource>);
   }
 
   interface FastifyContextConfig {
@@ -36,9 +39,9 @@ declare namespace fastifyMultipleSwagger {
     exposeRoute?: ExposeRouteOptions;
     swaggerOptions?: SwaggerOptions;
     routePrefix?: string;
+    name?: string;
     meta?: {
-      title?: string;
-      slug?: string;
+      [key: string]: any;
     };
   }
 
@@ -57,8 +60,13 @@ declare namespace fastifyMultipleSwagger {
 
   export type ScalarDocumentSource = {
     url: string;
-    title?: string;
-    slug?: string;
+    title: string;
+    [key: string]: any;
+  };
+
+  export type SwaggerUIDocumentSource = {
+    url: string;
+    name: string;
   };
 
   export const fastifyMultipleSwagger: FastifyMultipleSwagger;
