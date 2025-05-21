@@ -57,22 +57,22 @@ function plugin(fastify, opts, next) {
   }
 
   fastify.decorate('getDocumentSources', (sourceOptions) => {
-    if (typeof sourceOptions !== 'object') return documentSources
+    if (typeof sourceOptions === 'object') {
+      if (sourceOptions.scalar === true) {
+        return documentSources.map((source) => ({
+          url: source.json,
+          title: source.name,
+          ...source.meta,
+        }))
+      }
 
-    if (sourceOptions.scalar === true) {
-      return documentSources.map((source) => ({
-        url: source.json,
-        title: source.name,
-        ...source.meta,
-      }))
-    }
-
-    if (sourceOptions.swaggerUI === true) {
-      return documentSources.map((source) => ({
-        url: source.json,
-        name: source.name,
-        ...source.meta,
-      }))
+      if (sourceOptions.swaggerUI === true) {
+        return documentSources.map((source) => ({
+          url: source.json,
+          name: source.name,
+          ...source.meta,
+        }))
+      }
     }
 
     return documentSources
