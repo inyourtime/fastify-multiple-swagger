@@ -1,5 +1,8 @@
 # fastify-multiple-swagger
 
+[![CI](https://github.com/inyourtime/fastify-multiple-swagger/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/inyourtime/fastify-multiple-swagger/actions/workflows/ci.yml)
+[![NPM version](https://img.shields.io/npm/v/fastify-multiple-swagger.svg?style=flat)](https://www.npmjs.com/package/fastify-multiple-swagger)
+
 A Fastify plugin for generating multiple Swagger/OpenAPI documents using [@fastify/swagger](https://github.com/fastify/fastify-swagger). This plugin allows you to create and manage multiple API documentation sets within a single Fastify application.
 
 ## Features
