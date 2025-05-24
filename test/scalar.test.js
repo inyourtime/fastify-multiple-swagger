@@ -9,7 +9,7 @@ test('should work with scalar #default config', async (t) => {
   t.after(() => fastify.close())
 
   await fastify.register(require('..'), {
-    documents: [{ decorator: 'swagger1' }, { decorator: 'swagger2' }],
+    documents: [{ documentRef: 'swagger1' }, { documentRef: 'swagger2' }],
   })
 
   const Scalar = await import('@scalar/fastify-api-reference')
@@ -40,13 +40,13 @@ test('should work with scalar #custom config', async (t) => {
   await fastify.register(require('..'), {
     documents: [
       {
-        decorator: 'swagger1',
+        documentRef: 'swagger1',
         exposeRoute: { json: '/swagger1.json' },
         name: 'Swagger 1',
         meta: { default: true },
       },
       {
-        decorator: 'swagger2',
+        documentRef: 'swagger2',
         exposeRoute: { json: '/swagger2.json' },
         meta: { slug: 'swagger-2' },
       },
