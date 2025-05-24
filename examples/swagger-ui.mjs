@@ -1,5 +1,5 @@
-import Fastify from 'fastify'
 import SwaggerUI from '@fastify/swagger-ui'
+import Fastify from 'fastify'
 import fastifyMultipleSwagger from '../index.js'
 
 const app = Fastify()

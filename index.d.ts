@@ -1,10 +1,7 @@
-import type { FastifyPluginAsync } from "fastify";
-import type {
-  FastifyStaticSwaggerOptions,
-  FastifyDynamicSwaggerOptions,
-} from "@fastify/swagger";
+import type { FastifyDynamicSwaggerOptions, FastifyStaticSwaggerOptions } from '@fastify/swagger'
+import type { FastifyPluginAsync } from 'fastify'
 
-declare module "fastify" {
+declare module 'fastify' {
   interface FastifyInstance {
     /**
      * Returns an array of document sources
@@ -17,54 +14,55 @@ declare module "fastify" {
      * ```
      */
     getDocumentSources: (() => Array<fastifyMultipleSwagger.DocumentSource>) &
+      ((opts: { scalar: true }) => Array<fastifyMultipleSwagger.ScalarSource>) &
       ((opts: {
-        scalar: true;
-      }) => Array<fastifyMultipleSwagger.ScalarDocumentSource>) &
-      ((opts: {
-        swaggerUI: true;
-      }) => Array<fastifyMultipleSwagger.SwaggerUIDocumentSource>);
+        swaggerUI: true
+      }) => Array<fastifyMultipleSwagger.SwaggerUISource>)
   }
 
   interface FastifyContextConfig {
     /**
-     * Decorator name (Unique identifier for the document)
+     * Swagger document reference used for this route
      */
-    swaggerDecorator?: string;
+    documentRef?: string
   }
 }
 
 type FastifyMultipleSwagger =
-  FastifyPluginAsync<fastifyMultipleSwagger.FastifyMultipleSwaggerOptions>;
+  FastifyPluginAsync<fastifyMultipleSwagger.FastifyMultipleSwaggerOptions>
 
 declare namespace fastifyMultipleSwagger {
   export interface FastifyMultipleSwaggerOptions {
     /**
-     * Array of document configurations or decorator names (required)
+     * Array of document configurations or documentRef names (required)
      */
-    documents: Array<string | SwaggerDocument>;
+    documents: Array<string | DocumentConfig>
     /**
-     * Default decorator name for routes without explicit decorator
+     * Default documentRef name for routes without explicit documentRef
+     * @default undefined
      */
-    defaultDecorator?: string;
+    defaultDocumentRef?: string
     /**
      * Global prefix for all document routes
      */
-    routePrefix?: string;
+    routePrefix?: string
   }
 
   export type SwaggerOptions =
     | FastifyStaticSwaggerOptions
-    | Omit<FastifyDynamicSwaggerOptions, "decorator">;
+    | Omit<FastifyDynamicSwaggerOptions, 'decorator'>
 
-  export interface SwaggerDocument {
+  export interface DocumentConfig {
     /**
-     * Decorator name (Unique identifier for the document)
+     * Unique reference name for the Swagger document
      */
-    decorator: string;
+    documentRef: string
     /**
      * Configuration for exposing JSON/YAML routes
      * Can be boolean or object with `json` and `yaml` as booleans or strings
      * If `json` and `yaml` are strings, they will be used as route paths
+     *
+     * @default true
      *
      * @example
      * ```js
@@ -79,66 +77,68 @@ declare namespace fastifyMultipleSwagger {
      * }
      *
      */
-    exposeRoute?: ExposeRouteOptions;
+    exposeRoute?: ExposeRouteOptions
     /**
      * Configuration passed to @fastify/swagger
      * @see https://github.com/fastify/fastify-swagger?tab=readme-ov-file#api
      */
-    swaggerOptions?: SwaggerOptions;
+    swaggerOptions?: SwaggerOptions
     /**
      * Document-specific route prefix
      */
-    routePrefix?: string;
+    routePrefix?: string
     /**
-     * Display name for the document
+     * Display name for the UI providers
      */
-    name?: string;
+    name?: string
     /**
      * Additional metadata for UI providers configuration
      */
     meta?: {
-      [key: string]: any;
-    };
+      [key: string]: any
+    }
   }
 
   export type ExposeRouteOptions =
     | {
-        json?: string | boolean;
-        yaml?: string | boolean;
+        json?: string | boolean
+        yaml?: string | boolean
       }
-    | boolean;
+    | boolean
 
   export type DocumentSource = {
     /**
-     * Decorator name
+     * Unique reference name for the Swagger document
      */
-    decorator: string;
+    documentRef: string
     /**
      * Url for JSON route
+     * @default `/doc-${index}/json`
      */
-    json: string | null;
+    json: string | null
     /**
      * Url for YAML route
+     * @default `/doc-${index}/yaml`
      */
-    yaml: string | null;
-  };
+    yaml: string | null
+  }
 
-  export type ScalarDocumentSource = {
-    url: string;
-    title: string;
-    [key: string]: any;
-  };
+  export type ScalarSource = {
+    url: string
+    title: string
+    [key: string]: any
+  }
 
-  export type SwaggerUIDocumentSource = {
-    url: string;
-    name: string;
-  };
+  export type SwaggerUISource = {
+    url: string
+    name: string
+  }
 
-  export const fastifyMultipleSwagger: FastifyMultipleSwagger;
-  export { fastifyMultipleSwagger as default };
+  export const fastifyMultipleSwagger: FastifyMultipleSwagger
+  export { fastifyMultipleSwagger as default }
 }
 
 declare function fastifyMultipleSwagger(
   ...params: Parameters<FastifyMultipleSwagger>
-): ReturnType<FastifyMultipleSwagger>;
-export = fastifyMultipleSwagger;
+): ReturnType<FastifyMultipleSwagger>
+export = fastifyMultipleSwagger

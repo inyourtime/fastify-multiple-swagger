@@ -1,5 +1,5 @@
-import Fastify from 'fastify'
 import Scalar from '@scalar/fastify-api-reference'
+import Fastify from 'fastify'
 import fastifyMultipleSwagger from '../index.js'
 
 const app = Fastify()
