@@ -59,7 +59,6 @@ app.register(fastifyMultipleSwagger, {
         json: '/swagger.json',
         yaml: '/swagger.yaml',
       },
-      routePrefix: '/doc',
     },
   ],
 })

@@ -33,7 +33,7 @@ function plugin(fastify, opts, next) {
     const jsonPath = typeof exposeRoute.json === 'string' ? exposeRoute.json : `/doc-${index}/json`
     const yamlPath = typeof exposeRoute.yaml === 'string' ? exposeRoute.yaml : `/doc-${index}/yaml`
 
-    const routePrefix = normalizedOptions.routePrefix || opts.routePrefix
+    const routePrefix = opts.routePrefix
 
     // Register route for json/yaml
     fastify.register(require('./lib/route'), {

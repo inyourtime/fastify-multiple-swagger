@@ -43,7 +43,7 @@ declare namespace fastifyMultipleSwagger {
      */
     defaultDocumentRef?: string
     /**
-     * Global prefix for all document routes
+     * Global prefix for all document routes (json and yaml)
      */
     routePrefix?: string
   }
@@ -83,10 +83,6 @@ declare namespace fastifyMultipleSwagger {
      * @see https://github.com/fastify/fastify-swagger?tab=readme-ov-file#api
      */
     swaggerOptions?: SwaggerOptions
-    /**
-     * Document-specific route prefix
-     */
-    routePrefix?: string
     /**
      * Display name for the UI providers
      */

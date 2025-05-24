@@ -353,40 +353,6 @@ test('getDocumentSources with no exposeRoute', async (t) => {
   t.assert.strictEqual(source.yaml, null)
 })
 
-test('routePrefix each document', async (t) => {
-  t.plan(11)
-  const fastify = Fastify()
-  t.after(() => fastify.close())
-
-  await fastify.register(require('..'), {
-    documents: [
-      {
-        decorator: 'foo',
-        exposeRoute: { json: '/foo.json', yaml: '/foo.yaml' },
-        routePrefix: '/external',
-      },
-      { decorator: 'bar', exposeRoute: { json: '/bar.json', yaml: '/bar.yaml' } },
-    ],
-    routePrefix: '/internal',
-  })
-
-  await fastify.ready()
-
-  t.assert.strictEqual(fastify.hasRoute({ method: 'GET', url: '/external/foo.json' }), true)
-  t.assert.strictEqual(fastify.hasRoute({ method: 'GET', url: '/external/foo.yaml' }), true)
-  t.assert.strictEqual(fastify.hasRoute({ method: 'GET', url: '/internal/bar.json' }), true)
-  t.assert.strictEqual(fastify.hasRoute({ method: 'GET', url: '/internal/bar.yaml' }), true)
-
-  const sources = fastify.getDocumentSources()
-  t.assert.strictEqual(sources.length, 2)
-  t.assert.strictEqual(sources[0].decorator, 'foo')
-  t.assert.strictEqual(sources[0].json, '/external/foo.json')
-  t.assert.strictEqual(sources[0].yaml, '/external/foo.yaml')
-  t.assert.strictEqual(sources[1].decorator, 'bar')
-  t.assert.strictEqual(sources[1].json, '/internal/bar.json')
-  t.assert.strictEqual(sources[1].yaml, '/internal/bar.yaml')
-})
-
 test('getDocumentSources with scalar option', async (t) => {
   t.plan(7)
   const fastify = Fastify()
@@ -396,8 +362,7 @@ test('getDocumentSources with scalar option', async (t) => {
     documents: [
       {
         decorator: 'foo',
-        exposeRoute: { json: '/swagger.json', yaml: '/swagger.yaml' },
-        routePrefix: '/foo',
+        exposeRoute: { json: '/foo/swagger.json', yaml: '/foo/swagger.yaml' },
         name: "Foo's API",
         meta: {
           slug: 'foo',
@@ -406,8 +371,7 @@ test('getDocumentSources with scalar option', async (t) => {
       },
       {
         decorator: 'bar',
-        exposeRoute: { json: '/swagger.json', yaml: '/swagger.yaml' },
-        routePrefix: '/bar',
+        exposeRoute: { json: '/bar/swagger.json', yaml: '/bar/swagger.yaml' },
       },
     ],
   })
@@ -433,14 +397,12 @@ test('getDocumentSources with swaggerUI option', async (t) => {
     documents: [
       {
         decorator: 'foo',
-        exposeRoute: { json: '/swagger.json', yaml: '/swagger.yaml' },
-        routePrefix: '/foo',
+        exposeRoute: { json: '/foo/swagger.json', yaml: '/foo/swagger.yaml' },
         name: "Foo's API",
       },
       {
         decorator: 'bar',
-        exposeRoute: { json: '/swagger.json', yaml: '/swagger.yaml' },
-        routePrefix: '/bar',
+        exposeRoute: { json: '/bar/swagger.json', yaml: '/bar/swagger.yaml' },
       },
     ],
   })
@@ -463,14 +425,12 @@ test('getDocumentSources with invalid option', async (t) => {
     documents: [
       {
         decorator: 'foo',
-        exposeRoute: { json: '/swagger.json', yaml: '/swagger.yaml' },
-        routePrefix: '/foo',
+        exposeRoute: { json: '/foo/swagger.json', yaml: '/foo/swagger.yaml' },
         name: "Foo's API",
       },
       {
         decorator: 'bar',
-        exposeRoute: { json: '/swagger.json', yaml: '/swagger.yaml' },
-        routePrefix: '/bar',
+        exposeRoute: { json: '/bar/swagger.json', yaml: '/bar/swagger.yaml' },
       },
     ],
   })
