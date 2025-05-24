@@ -33,7 +33,7 @@ const app = Fastify()
 await app.register(fastifyMultipleSwagger, {
   documents: [
     {
-      decorator: 'internal',
+      documentRef: 'internal',
       swaggerOptions: {
         openapi: {
           info: {
@@ -44,7 +44,7 @@ await app.register(fastifyMultipleSwagger, {
       }
     },
     {
-      decorator: 'external',
+      documentRef: 'external',
       swaggerOptions: {
         openapi: {
           info: {
@@ -60,7 +60,7 @@ await app.register(fastifyMultipleSwagger, {
 
 ### Route Configuration
 
-To associate routes with specific Swagger documents, use the `swaggerDecorator` in the route configuration:
+To associate routes with specific Swagger documents, use the `documentRef` in the route configuration:
 
 ```javascript
 app.get('/internal/route', {
@@ -68,7 +68,7 @@ app.get('/internal/route', {
     // Your schema definition
   },
   config: {
-    swaggerDecorator: 'internal'
+    documentRef: 'internal'
   }
 }, handler)
 
@@ -77,7 +77,7 @@ app.get('/external/route', {
     // Your schema definition
   },
   config: {
-    swaggerDecorator: 'external'
+    documentRef: 'external'
   }
 }, handler)
 ```
@@ -90,7 +90,7 @@ import Scalar from '@scalar/fastify-api-reference'
 await app.register(fastifyMultipleSwagger, {
   documents: [
     {
-      decorator: 'internal',
+      documentRef: 'internal',
       name: 'Internal API',
       meta: {
         default: true
@@ -123,7 +123,7 @@ import SwaggerUI from '@fastify/swagger-ui'
 await app.register(fastifyMultipleSwagger, {
   documents: [
     {
-      decorator: 'internal',
+      documentRef: 'internal',
       name: 'Internal API',
       swaggerOptions: {
         openapi: {
@@ -150,19 +150,18 @@ await app.register(SwaggerUI, {
 ### Plugin Options
 
 - `documents` (required): Array of document configurations
-  - Can be strings (decorator names) or objects with detailed configuration
-- `defaultDecorator` (optional): Default decorator name for routes without explicit decorator
-- `routePrefix` (optional): Global prefix for all document routes
+  - Can be strings (documentRef names) or objects with detailed configuration
+- `defaultDocumentRef` (optional): Default documentRef name for routes without explicit documentRef
+- `routePrefix` (optional): Global prefix for all document routes (json and yaml)
 
 ### Document Options
 
-- `decorator` (required): Unique identifier for the document
+- `documentRef` (required): Unique reference name for the Swagger document
 - `exposeRoute` (optional): Configuration for exposing JSON/YAML routes
   - Can be boolean or object with `json` and `yaml` properties
 - `swaggerOptions` (optional): Configuration passed to @fastify/swagger
-- `routePrefix` (optional): Document-specific route prefix
-- `name` (optional): Display name for the document
-- `meta` (optional): Additional metadata for the document
+- `name` (optional): Display name for the UI providers
+- `meta` (optional): Additional metadata for UI providers configuration
 
 ## API
 
