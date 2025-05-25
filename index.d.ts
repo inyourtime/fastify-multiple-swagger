@@ -78,7 +78,7 @@ declare namespace fastifyMultipleSwagger {
      *
      * - 'ref': matches based on the `documentRef` manually assigned to routes config
      * - 'prefix': matches based on the `urlPrefix` used in the route path
-     * - 'none': no automatic matching; you can use `transform` function in `swaggerOptions`
+     * - 'none': matches all routes; you can use `transform` function in `swaggerOptions` to hide routes
      *
      * @default 'ref'
      */

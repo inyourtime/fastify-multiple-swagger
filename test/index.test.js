@@ -509,7 +509,7 @@ test('getDocument with YAML option', async (t) => {
 })
 
 test('routeSelector with "ref"', async (t) => {
-  t.plan(1)
+  t.plan(2)
   const fastify = Fastify()
   t.after(() => fastify.close())
 
@@ -528,16 +528,29 @@ test('routeSelector with "ref"', async (t) => {
     (req) => req.query,
   )
 
+  fastify.get(
+    '/bar',
+    {
+      schema: { querystring: { type: 'object', properties: { name: { type: 'string' } } } },
+      config: {
+        documentRef: 'bar',
+      },
+    },
+    (req) => req.query,
+  )
+
   await fastify.ready()
 
   const apiFoo = await Swagger.validate(fastify[getDecoratorName('foo')]())
   const definedPathFoo = apiFoo.paths['/foo']?.get
+  const definedPathBar = apiFoo.paths['/bar']?.get
 
   t.assert.ok(definedPathFoo)
+  t.assert.strictEqual(definedPathBar, undefined)
 })
 
 test('routeSelector with "prefix"', async (t) => {
-  t.plan(1)
+  t.plan(2)
   const fastify = Fastify()
   t.after(() => fastify.close())
 
@@ -553,16 +566,26 @@ test('routeSelector with "prefix"', async (t) => {
     (req) => req.query,
   )
 
+  fastify.get(
+    '/bar',
+    {
+      schema: { querystring: { type: 'object', properties: { name: { type: 'string' } } } },
+    },
+    (req) => req.query,
+  )
+
   await fastify.ready()
 
   const apiFoo = await Swagger.validate(fastify[getDecoratorName('foo')]())
   const definedPathFoo = apiFoo.paths['/foo']?.get
+  const definedPathBar = apiFoo.paths['/bar']?.get
 
   t.assert.ok(definedPathFoo)
+  t.assert.strictEqual(definedPathBar, undefined)
 })
 
 test('routeSelector with "none"', async (t) => {
-  t.plan(1)
+  t.plan(2)
   const fastify = Fastify()
   t.after(() => fastify.close())
 
@@ -578,12 +601,22 @@ test('routeSelector with "none"', async (t) => {
     (req) => req.query,
   )
 
+  fastify.get(
+    '/bar',
+    {
+      schema: { querystring: { type: 'object', properties: { name: { type: 'string' } } } },
+    },
+    (req) => req.query,
+  )
+
   await fastify.ready()
 
   const apiFoo = await Swagger.validate(fastify[getDecoratorName('foo')]())
   const definedPathFoo = apiFoo.paths['/foo']?.get
+  const definedPathBar = apiFoo.paths['/bar']?.get
 
-  t.assert.strictEqual(definedPathFoo, undefined)
+  t.assert.ok(definedPathFoo)
+  t.assert.ok(definedPathBar)
 })
 
 test('invalid routeSelector', async (t) => {
