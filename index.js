@@ -32,7 +32,9 @@ function plugin(fastify, opts, next) {
     const routeSelector = normalizedOptions.routeSelector || 'ref'
     if (!routeSelectors.includes(routeSelector)) {
       return next(
-        new TypeError(`"routeSelector" option must be one of ${routeSelectors.join(', ')}`),
+        new TypeError(
+          `"routeSelector" option must be one of ${routeSelectors.map((s) => `"${s}"`).join(', ')}`,
+        ),
       )
     }
 

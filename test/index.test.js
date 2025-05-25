@@ -507,3 +507,117 @@ test('getDocument with YAML option', async (t) => {
   await Swagger.validate(specJson)
   t.assert.ok(specJson.swagger)
 })
+
+test('routeSelector with "ref"', async (t) => {
+  t.plan(1)
+  const fastify = Fastify()
+  t.after(() => fastify.close())
+
+  await fastify.register(require('..'), {
+    documents: [{ documentRef: 'foo', routeSelector: 'ref' }],
+  })
+
+  fastify.get(
+    '/foo',
+    {
+      schema: { querystring: { type: 'object', properties: { name: { type: 'string' } } } },
+      config: {
+        documentRef: 'foo',
+      },
+    },
+    (req) => req.query,
+  )
+
+  await fastify.ready()
+
+  const apiFoo = await Swagger.validate(fastify[getDecoratorName('foo')]())
+  const definedPathFoo = apiFoo.paths['/foo']?.get
+
+  t.assert.ok(definedPathFoo)
+})
+
+test('routeSelector with "prefix"', async (t) => {
+  t.plan(1)
+  const fastify = Fastify()
+  t.after(() => fastify.close())
+
+  await fastify.register(require('..'), {
+    documents: [{ documentRef: 'foo', routeSelector: 'prefix', urlPrefix: '/foo' }],
+  })
+
+  fastify.get(
+    '/foo',
+    {
+      schema: { querystring: { type: 'object', properties: { name: { type: 'string' } } } },
+    },
+    (req) => req.query,
+  )
+
+  await fastify.ready()
+
+  const apiFoo = await Swagger.validate(fastify[getDecoratorName('foo')]())
+  const definedPathFoo = apiFoo.paths['/foo']?.get
+
+  t.assert.ok(definedPathFoo)
+})
+
+test('routeSelector with "none"', async (t) => {
+  t.plan(1)
+  const fastify = Fastify()
+  t.after(() => fastify.close())
+
+  await fastify.register(require('..'), {
+    documents: [{ documentRef: 'foo', routeSelector: 'none', urlPrefix: '/foo' }],
+  })
+
+  fastify.get(
+    '/foo',
+    {
+      schema: { querystring: { type: 'object', properties: { name: { type: 'string' } } } },
+    },
+    (req) => req.query,
+  )
+
+  await fastify.ready()
+
+  const apiFoo = await Swagger.validate(fastify[getDecoratorName('foo')]())
+  const definedPathFoo = apiFoo.paths['/foo']?.get
+
+  t.assert.strictEqual(definedPathFoo, undefined)
+})
+
+test('invalid routeSelector', async (t) => {
+  t.plan(2)
+  const fastify = Fastify()
+  t.after(() => fastify.close())
+
+  try {
+    await fastify.register(require('..'), {
+      documents: [{ documentRef: 'foo', routeSelector: 'foo', urlPrefix: '/foo' }],
+    })
+  } catch (err) {
+    t.assert.ok(err)
+    t.assert.strictEqual(
+      err.message,
+      '"routeSelector" option must be one of "ref", "prefix", "none"',
+    )
+  }
+})
+
+test('require urlPrefix when use routeSelector "prefix"', async (t) => {
+  t.plan(2)
+  const fastify = Fastify()
+  t.after(() => fastify.close())
+
+  try {
+    await fastify.register(require('..'), {
+      documents: [{ documentRef: 'foo', routeSelector: 'prefix' }],
+    })
+  } catch (err) {
+    t.assert.ok(err)
+    t.assert.strictEqual(
+      err.message,
+      '"urlPrefix" option is required when "routeSelector" is "prefix"',
+    )
+  }
+})
