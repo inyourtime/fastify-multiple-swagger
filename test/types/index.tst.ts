@@ -49,6 +49,8 @@ app.register(fastifyMultipleSwagger, {
         default: true,
         slug: 'foo',
       },
+      routeSelector: 'prefix',
+      urlPrefix: '/api/v1',
     },
   ],
 })

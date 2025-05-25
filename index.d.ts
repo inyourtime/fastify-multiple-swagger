@@ -74,6 +74,29 @@ declare namespace fastifyMultipleSwagger {
      */
     documentRef: string
     /**
+     * Determines how routes are matched to this Swagger document.
+     *
+     * - 'ref': matches based on the `documentRef` manually assigned to routes config
+     * - 'prefix': matches based on the `urlPrefix` used in the route path
+     * - 'none': no automatic matching; you can use `transform` function in `swaggerOptions`
+     *
+     * @default 'ref'
+     */
+    routeSelector?: 'ref' | 'prefix' | 'none'
+    /**
+     * URL path prefix used to match routes to this Swagger document
+     *
+     * Only used when `routeSelector` is set to `'prefix'`.
+     * If a route starts with this prefix, it will be associated with this document.
+     *
+     * Example:
+     * ```js
+     * urlPrefix: '/admin'
+     * // Routes like /admin/users or /admin/settings will be matched to this document
+     * ```
+     */
+    urlPrefix?: string
+    /**
      * Configuration for exposing JSON/YAML routes
      * Can be boolean or object with `json` and `yaml` as booleans or strings
      * If `json` and `yaml` are strings, they will be used as route paths
