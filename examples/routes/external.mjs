@@ -16,7 +16,7 @@ export default async function (app) {
         },
       },
       config: {
-        swaggerDecorator: 'external',
+        documentRef: 'external',
       },
     },
     (req, reply) => {
@@ -38,7 +38,7 @@ export default async function (app) {
         },
       },
       config: {
-        swaggerDecorator: 'external',
+        documentRef: 'external',
       },
     },
     (req, reply) => {

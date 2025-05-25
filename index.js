@@ -1,7 +1,7 @@
 'use strict'
 
 const fp = require('fastify-plugin')
-const { getExposeRouteOptions } = require('./lib/utils')
+const { getExposeRouteOptions, getDecoratorName } = require('./lib/utils')
 
 /**
  * @type {import('fastify').FastifyPluginCallback<import('.').FastifyMultipleSwaggerOptions>}
@@ -17,23 +17,30 @@ function plugin(fastify, opts, next) {
     const documentOptions = opts.documents[index]
 
     const normalizedOptions =
-      typeof documentOptions === 'string' ? { decorator: documentOptions } : documentOptions
+      typeof documentOptions === 'string' ? { documentRef: documentOptions } : documentOptions
 
     if (typeof normalizedOptions !== 'object') {
       return next(new TypeError('"documents" option must be an array of objects or strings'))
     }
 
+    if (typeof normalizedOptions.documentRef !== 'string') {
+      return next(new TypeError('"documentRef" option must be a string'))
+    }
+
+    const swaggerDecorator = getDecoratorName(normalizedOptions.documentRef)
+
     // Register swagger instance
     fastify.register(require('./lib/swagger'), {
       ...normalizedOptions,
-      defaultDecorator: opts.defaultDecorator,
+      defaultDocumentRef: opts.defaultDocumentRef,
+      swaggerDecorator,
     })
 
     const exposeRoute = getExposeRouteOptions(normalizedOptions.exposeRoute)
     const jsonPath = typeof exposeRoute.json === 'string' ? exposeRoute.json : `/doc-${index}/json`
     const yamlPath = typeof exposeRoute.yaml === 'string' ? exposeRoute.yaml : `/doc-${index}/yaml`
 
-    const routePrefix = normalizedOptions.routePrefix || opts.routePrefix
+    const routePrefix = opts.routePrefix
 
     // Register route for json/yaml
     fastify.register(require('./lib/route'), {
@@ -42,11 +49,11 @@ function plugin(fastify, opts, next) {
       exposeRoute,
       jsonPath,
       yamlPath,
-      decorator: normalizedOptions.decorator,
+      swaggerDecorator,
     })
 
     const documentSource = {
-      decorator: normalizedOptions.decorator,
+      documentRef: normalizedOptions.documentRef,
       json: exposeRoute.json ? (routePrefix ? withPrefix(routePrefix, jsonPath) : jsonPath) : null,
       yaml: exposeRoute.yaml ? (routePrefix ? withPrefix(routePrefix, yamlPath) : yamlPath) : null,
       name: normalizedOptions.name,
@@ -76,6 +83,19 @@ function plugin(fastify, opts, next) {
     }
 
     return documentSources
+  })
+
+  fastify.decorate('getDocument', (documentRef, options) => {
+    if (typeof documentRef !== 'string') {
+      throw new TypeError('"documentRef" must be a string')
+    }
+    const decorator = getDecoratorName(documentRef)
+
+    if (fastify.hasDecorator(decorator) && typeof fastify[decorator] === 'function') {
+      return fastify[decorator](options)
+    }
+
+    throw new Error(`documentRef "${documentRef}" does not exist`)
   })
 
   next()

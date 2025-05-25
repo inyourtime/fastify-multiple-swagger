@@ -1,11 +1,11 @@
-import Fastify from 'fastify'
 import SwaggerUI from '@fastify/swagger-ui'
+import Fastify from 'fastify'
 import fastifyMultipleSwagger from '../index.js'
 
 const app = Fastify()
 
 const internalOption = {
-  decorator: 'internal',
+  documentRef: 'internal',
   swaggerOptions: {
     openapi: {
       info: {
@@ -18,7 +18,7 @@ const internalOption = {
 }
 
 const externalOption = {
-  decorator: 'external',
+  documentRef: 'external',
   swaggerOptions: {
     openapi: {
       info: {
