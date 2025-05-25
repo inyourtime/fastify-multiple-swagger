@@ -1,4 +1,5 @@
 import Fastify from 'fastify'
+import type { OpenAPI } from 'openapi-types'
 import { expect } from 'tstyche'
 import fastifyMultipleSwagger from '../..'
 import type {
@@ -121,3 +122,8 @@ expect<Array<ScalarSource>>().type.toBe(app.getDocumentSources({ scalar: true })
 expect<Array<SwaggerUISource>>().type.toBe(app.getDocumentSources({ swaggerUI: true }))
 expect(app.getDocumentSources({ scalar: true, swaggerUI: true })).type.toRaiseError()
 expect(app.getDocumentSources({ scalar: false })).type.toRaiseError()
+
+expect(app.getDocument()).type.toRaiseError()
+expect<OpenAPI.Document>().type.toBe(app.getDocument('foo'))
+expect<OpenAPI.Document>().type.toBe(app.getDocument('foo', { yaml: false }))
+expect<string>().type.toBe(app.getDocument('foo', { yaml: true }))

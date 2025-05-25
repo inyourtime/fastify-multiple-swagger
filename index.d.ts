@@ -1,5 +1,6 @@
 import type { FastifyDynamicSwaggerOptions, FastifyStaticSwaggerOptions } from '@fastify/swagger'
 import type { FastifyPluginAsync } from 'fastify'
+import type { OpenAPI } from 'openapi-types'
 
 declare module 'fastify' {
   interface FastifyInstance {
@@ -8,9 +9,9 @@ declare module 'fastify' {
      *
      * @example
      * ```js
-     * app.getDocumentSources()
-     * app.getDocumentSources({ scalar: true })
-     * app.getDocumentSources({ swaggerUI: true })
+     * fastify.getDocumentSources()
+     * fastify.getDocumentSources({ scalar: true })
+     * fastify.getDocumentSources({ swaggerUI: true })
      * ```
      */
     getDocumentSources: (() => Array<fastifyMultipleSwagger.DocumentSource>) &
@@ -18,6 +19,21 @@ declare module 'fastify' {
       ((opts: {
         swaggerUI: true
       }) => Array<fastifyMultipleSwagger.SwaggerUISource>)
+
+    /**
+     * Returns a swagger document by documentRef
+     * If documentRef does not exist, then an error is thrown
+     *
+     * @example
+     * ```js
+     * fastify.getDocument('foo')
+     * fastify.getDocument('foo', { yaml: false })
+     * fastify.getDocument('foo', { yaml: true })
+     * ```
+     */
+    getDocument: ((documentRef: string, opts?: { yaml?: false }) => OpenAPI.Document) &
+      ((documentRef: string, opts: { yaml: true }) => string) &
+      ((documentRef: string, opts: { yaml: boolean }) => OpenAPI.Document | string)
   }
 
   interface FastifyContextConfig {
