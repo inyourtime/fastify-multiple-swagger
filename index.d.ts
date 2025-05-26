@@ -1,5 +1,5 @@
 import type { FastifyDynamicSwaggerOptions, FastifyStaticSwaggerOptions } from '@fastify/swagger'
-import type { FastifyPluginAsync } from 'fastify'
+import type { FastifyPluginAsync, RouteOptions } from 'fastify'
 import type { OpenAPI } from 'openapi-types'
 
 declare module 'fastify' {
@@ -73,6 +73,38 @@ declare namespace fastifyMultipleSwagger {
      * Unique reference name for the Swagger document
      */
     documentRef: string
+    /**
+     * Determines how routes are matched to this Swagger document.
+     *
+     * - 'ref': matches based on the `documentRef` manually assigned to routes config
+     * - 'prefix': matches based on the `urlPrefix` used in the route path
+     * - function: matches based on a custom function
+     *
+     * @default 'ref'
+     *
+     * @example
+     * ```js
+     * routeSelector: 'ref'
+     * routeSelector: 'prefix'
+     * routeSelector: (routeOptions, url) => {
+     *   return routeOptions.config?.documentRef === 'foo' && url.startsWith('/foo')
+     * }
+     * ```
+     */
+    routeSelector?: 'ref' | 'prefix' | ((routeOptions: RouteOptions, url: string) => boolean)
+    /**
+     * URL path prefix used to match routes to this Swagger document
+     *
+     * Only used when `routeSelector` is set to `'prefix'`.
+     * If a route starts with this prefix, it will be associated with this document.
+     *
+     * Example:
+     * ```js
+     * urlPrefix: '/admin'
+     * // Routes like /admin/users or /admin/settings will be matched to this document
+     * ```
+     */
+    urlPrefix?: string
     /**
      * Configuration for exposing JSON/YAML routes
      * Can be boolean or object with `json` and `yaml` as booleans or strings

@@ -1,4 +1,5 @@
 import Fastify from 'fastify'
+import type { RouteOptions } from 'fastify'
 import type { OpenAPI } from 'openapi-types'
 import { expect } from 'tstyche'
 import fastifyMultipleSwagger from '../..'
@@ -25,6 +26,7 @@ app.register(fastifyMultipleSwagger, {
     {
       documentRef: 'foo',
       exposeRoute: false,
+      routeSelector: 'ref',
       swaggerOptions: {
         openapi: {
           info: {
@@ -49,6 +51,8 @@ app.register(fastifyMultipleSwagger, {
         default: true,
         slug: 'foo',
       },
+      routeSelector: 'prefix',
+      urlPrefix: '/api/v1',
     },
   ],
 })
@@ -59,6 +63,11 @@ app.register(fastifyMultipleSwagger, {
       exposeRoute: {
         json: '/swagger.json',
         yaml: '/swagger.yaml',
+      },
+      routeSelector(routeOptions, url) {
+        expect<string>().type.toBe(url)
+        expect<RouteOptions>().type.toBe(routeOptions)
+        return true
       },
     },
   ],
