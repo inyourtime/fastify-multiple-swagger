@@ -167,11 +167,81 @@ await fastify.register(SwaggerUI, {
 ### Document Options
 
 - `documentRef` (required): Unique reference name for the Swagger document
+- `routeSelector` (optional): Determines how routes are selected for this document
+  - Can be a string: 'ref' (uses documentRef) or 'prefix' (uses urlPrefix)
+  - Can be a function that receives route options and returns boolean
+- `urlPrefix` (optional): URL prefix to filter routes for this document
+  - Routes starting with this prefix will be included in the document
 - `exposeRoute` (optional): Configuration for exposing JSON/YAML routes
   - Can be boolean or object with `json` and `yaml` properties
 - `swaggerOptions` (optional): Configuration passed to @fastify/swagger
 - `name` (optional): Display name for the UI providers
 - `meta` (optional): Additional metadata for UI providers configuration
+
+### Route Selection
+
+The plugin provides three ways to select which routes should be included in each Swagger document:
+
+1. Using `routeSelector` as a string:
+```javascript
+await fastify.register(fastifyMultipleSwagger, {
+  documents: [
+    {
+      documentRef: "internal",
+      routeSelector: "ref", // Uses documentRef for route selection
+      swaggerOptions: {
+        openapi: {
+          info: {
+            title: "Internal API",
+            version: "1.0.0",
+          },
+        },
+      },
+    },
+    {
+      documentRef: "external",
+      urlPrefix: "/external",
+      routeSelector: "prefix", // Uses urlPrefix for route selection
+      swaggerOptions: {
+        openapi: {
+          info: {
+            title: "External API",
+            version: "1.0.0",
+          },
+        },
+      },
+    },
+  ],
+});
+```
+
+2. Using `routeSelector` as a custom function:
+```javascript
+await fastify.register(fastifyMultipleSwagger, {
+  documents: [
+    {
+      documentRef: "internal",
+      routeSelector: (routeOptions, url) => {
+        // Include routes with specific tags
+        return routeOptions.schema?.tags?.includes('internal');
+        // Or any other custom logic
+      },
+      swaggerOptions: {
+        openapi: {
+          info: {
+            title: "Internal API",
+            version: "1.0.0",
+          },
+        },
+      },
+    },
+  ],
+});
+```
+
+Note: The `routeSelector` takes precedence over `urlPrefix` when both are provided. When using `routeSelector` as a string:
+- 'ref' will use the `documentRef` to match routes
+- 'prefix' will use the `urlPrefix` to match routes
 
 ## API
 
