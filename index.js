@@ -3,7 +3,7 @@
 const fp = require('fastify-plugin')
 const { getExposeRouteOptions, getDecoratorName } = require('./lib/utils')
 
-const routeSelectors = ['ref', 'prefix', 'none']
+const routeSelectors = ['ref', 'prefix']
 
 /**
  * @type {import('fastify').FastifyPluginCallback<import('.').FastifyMultipleSwaggerOptions>}
@@ -30,10 +30,10 @@ function plugin(fastify, opts, next) {
     }
 
     const routeSelector = normalizedOptions.routeSelector || 'ref'
-    if (!routeSelectors.includes(routeSelector)) {
+    if (typeof routeSelector === 'string' && !routeSelectors.includes(routeSelector)) {
       return next(
         new TypeError(
-          `"routeSelector" option must be one of ${routeSelectors.map((s) => `"${s}"`).join(', ')}`,
+          `"routeSelector" option must be one of ${routeSelectors.map((s) => `"${s}"`).join(', ')} or a function`,
         ),
       )
     }

@@ -1,5 +1,5 @@
 import type { FastifyDynamicSwaggerOptions, FastifyStaticSwaggerOptions } from '@fastify/swagger'
-import type { FastifyPluginAsync } from 'fastify'
+import type { FastifyPluginAsync, RouteOptions } from 'fastify'
 import type { OpenAPI } from 'openapi-types'
 
 declare module 'fastify' {
@@ -78,11 +78,20 @@ declare namespace fastifyMultipleSwagger {
      *
      * - 'ref': matches based on the `documentRef` manually assigned to routes config
      * - 'prefix': matches based on the `urlPrefix` used in the route path
-     * - 'none': matches all routes; you can use `transform` function in `swaggerOptions` to hide routes
+     * - function: matches based on a custom function
      *
      * @default 'ref'
+     *
+     * @example
+     * ```js
+     * routeSelector: 'ref'
+     * routeSelector: 'prefix'
+     * routeSelector: (routeOptions, url) => {
+     *   return routeOptions.config?.documentRef === 'foo' && url.startsWith('/foo')
+     * }
+     * ```
      */
-    routeSelector?: 'ref' | 'prefix' | 'none'
+    routeSelector?: 'ref' | 'prefix' | ((routeOptions: RouteOptions, url: string) => boolean)
     /**
      * URL path prefix used to match routes to this Swagger document
      *

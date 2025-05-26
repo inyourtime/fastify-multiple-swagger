@@ -584,14 +584,30 @@ test('routeSelector with "prefix"', async (t) => {
   t.assert.strictEqual(definedPathBar, undefined)
 })
 
-test('routeSelector with "none"', async (t) => {
+test('routeSelector with custom function', async (t) => {
   t.plan(2)
   const fastify = Fastify()
   t.after(() => fastify.close())
 
   await fastify.register(require('..'), {
-    documents: [{ documentRef: 'foo', routeSelector: 'none', urlPrefix: '/foo' }],
+    documents: [
+      {
+        documentRef: 'foo',
+        routeSelector: (route, url) => {
+          return url.startsWith('/foo') && route.config?.documentRef === 'foo'
+        },
+      },
+    ],
   })
+
+  fastify.get(
+    '/foo/ref',
+    {
+      schema: { querystring: { type: 'object', properties: { name: { type: 'string' } } } },
+      config: { documentRef: 'foo' },
+    },
+    (req) => req.query,
+  )
 
   fastify.get(
     '/foo',
@@ -601,22 +617,14 @@ test('routeSelector with "none"', async (t) => {
     (req) => req.query,
   )
 
-  fastify.get(
-    '/bar',
-    {
-      schema: { querystring: { type: 'object', properties: { name: { type: 'string' } } } },
-    },
-    (req) => req.query,
-  )
-
   await fastify.ready()
 
   const apiFoo = await Swagger.validate(fastify[getDecoratorName('foo')]())
+  const definedPathFooRef = apiFoo.paths['/foo/ref']?.get
   const definedPathFoo = apiFoo.paths['/foo']?.get
-  const definedPathBar = apiFoo.paths['/bar']?.get
 
-  t.assert.ok(definedPathFoo)
-  t.assert.ok(definedPathBar)
+  t.assert.ok(definedPathFooRef)
+  t.assert.strictEqual(definedPathFoo, undefined)
 })
 
 test('invalid routeSelector', async (t) => {
@@ -632,7 +640,7 @@ test('invalid routeSelector', async (t) => {
     t.assert.ok(err)
     t.assert.strictEqual(
       err.message,
-      '"routeSelector" option must be one of "ref", "prefix", "none"',
+      '"routeSelector" option must be one of "ref", "prefix" or a function',
     )
   }
 })
