@@ -26,6 +26,7 @@ app.register(fastifyMultipleSwagger, {
     {
       documentRef: 'foo',
       exposeRoute: false,
+      routeSelector: 'ref',
       swaggerOptions: {
         openapi: {
           info: {
