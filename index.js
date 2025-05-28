@@ -3,8 +3,6 @@
 const fp = require('fastify-plugin')
 const { getExposeRouteOptions, getDecoratorName } = require('./lib/utils')
 
-const routeSelectors = ['ref', 'prefix']
-
 /**
  * @type {import('fastify').FastifyPluginCallback<import('.').FastifyMultipleSwaggerOptions>}
  */
@@ -29,19 +27,6 @@ function plugin(fastify, opts, next) {
       return next(new TypeError('"documentRef" option must be a string'))
     }
 
-    const routeSelector = normalizedOptions.routeSelector || 'ref'
-    if (typeof routeSelector === 'string' && !routeSelectors.includes(routeSelector)) {
-      return next(
-        new TypeError(
-          `"routeSelector" option must be one of ${routeSelectors.map((s) => `"${s}"`).join(', ')} or a function`,
-        ),
-      )
-    }
-
-    if (routeSelector === 'prefix' && !normalizedOptions.urlPrefix) {
-      return next(new TypeError('"urlPrefix" option is required when "routeSelector" is "prefix"'))
-    }
-
     const swaggerDecorator = getDecoratorName(normalizedOptions.documentRef)
 
     // Register swagger instance
@@ -49,8 +34,6 @@ function plugin(fastify, opts, next) {
       ...normalizedOptions,
       defaultDocumentRef: opts.defaultDocumentRef,
       swaggerDecorator,
-      routeSelector,
-      urlPrefix: normalizedOptions.urlPrefix,
     })
 
     const exposeRoute = getExposeRouteOptions(normalizedOptions.exposeRoute)
