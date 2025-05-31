@@ -200,7 +200,7 @@ await fastify.register(fastifyMultipleSwagger, {
     },
     {
       documentRef: "external",
-      urlPrefix: "/external",
+      urlPrefix: "/external", // or ["/admin", "/user"]
       routeSelector: "prefix", // Uses urlPrefix for route selection
       swaggerOptions: {
         openapi: {
