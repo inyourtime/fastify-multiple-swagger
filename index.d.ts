@@ -61,7 +61,7 @@ declare namespace fastifyMultipleSwagger {
     /**
      * Global prefix for all document routes (json and yaml)
      */
-    routePrefix?: string
+    routePrefix?: `/${string}`
   }
 
   export type SwaggerOptions =
@@ -102,9 +102,11 @@ declare namespace fastifyMultipleSwagger {
      * ```js
      * urlPrefix: '/admin'
      * // Routes like /admin/users or /admin/settings will be matched to this document
+     * urlPrefix: ['/admin', '/customer']
+     * // Routes like /admin/settings or /customer/profile will be matched to this document
      * ```
      */
-    urlPrefix?: string
+    urlPrefix?: `/${string}` | Array<`/${string}`>
     /**
      * Configuration for exposing JSON/YAML routes
      * Can be boolean or object with `json` and `yaml` as booleans or strings

@@ -60,6 +60,15 @@ app.register(fastifyMultipleSwagger, {
   documents: [
     {
       documentRef: 'foo',
+      routeSelector: 'prefix',
+      urlPrefix: ['/foo', '/bar'],
+    },
+  ],
+})
+app.register(fastifyMultipleSwagger, {
+  documents: [
+    {
+      documentRef: 'foo',
       exposeRoute: {
         json: '/swagger.json',
         yaml: '/swagger.yaml',

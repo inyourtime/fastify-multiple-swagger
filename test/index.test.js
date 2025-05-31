@@ -662,3 +662,38 @@ test('require urlPrefix when use routeSelector "prefix"', async (t) => {
     )
   }
 })
+
+test('routeSelector with "prefix" and "urlPrefix" as an array', async (t) => {
+  t.plan(2)
+  const fastify = Fastify()
+  t.after(() => fastify.close())
+
+  await fastify.register(require('..'), {
+    documents: [{ documentRef: 'foo', routeSelector: 'prefix', urlPrefix: ['/foo', '/bar'] }],
+  })
+
+  fastify.get(
+    '/foo',
+    {
+      schema: { querystring: { type: 'object', properties: { name: { type: 'string' } } } },
+    },
+    (req) => req.query,
+  )
+
+  fastify.get(
+    '/bar',
+    {
+      schema: { querystring: { type: 'object', properties: { name: { type: 'string' } } } },
+    },
+    (req) => req.query,
+  )
+
+  await fastify.ready()
+
+  const apiFoo = await Swagger.validate(fastify[getDecoratorName('foo')]())
+  const definedPathFoo = apiFoo.paths['/foo']?.get
+  const definedPathBar = apiFoo.paths['/bar']?.get
+
+  t.assert.ok(definedPathFoo)
+  t.assert.ok(definedPathBar)
+})
