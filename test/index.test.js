@@ -697,3 +697,21 @@ test('routeSelector with "prefix" and "urlPrefix" as an array', async (t) => {
   t.assert.ok(definedPathFoo)
   t.assert.ok(definedPathBar)
 })
+
+test('routeSelector with "prefix" and "urlPrefix" as an empty array', async (t) => {
+  t.plan(2)
+  const fastify = Fastify()
+  t.after(() => fastify.close())
+
+  try {
+    await fastify.register(require('..'), {
+      documents: [{ documentRef: 'foo', routeSelector: 'prefix', urlPrefix: [] }],
+    })
+  } catch (err) {
+    t.assert.ok(err)
+    t.assert.strictEqual(
+      err.message,
+      '"urlPrefix" option is required when "routeSelector" is "prefix"',
+    )
+  }
+})
