@@ -182,7 +182,8 @@ await fastify.register(SwaggerUI, {
 
 The plugin provides three ways to select which routes should be included in each Swagger document:
 
-1. Using `routeSelector` as a string:
+- Using `routeSelector` as a string:
+
 ```javascript
 await fastify.register(fastifyMultipleSwagger, {
   documents: [
@@ -215,7 +216,8 @@ await fastify.register(fastifyMultipleSwagger, {
 });
 ```
 
-2. Using `routeSelector` as a custom function:
+- Using `routeSelector` as a custom function:
+
 ```javascript
 await fastify.register(fastifyMultipleSwagger, {
   documents: [
@@ -240,6 +242,7 @@ await fastify.register(fastifyMultipleSwagger, {
 ```
 
 Note: The `routeSelector` takes precedence over `urlPrefix` when both are provided. When using `routeSelector` as a string:
+
 - 'ref' will use the `documentRef` to match routes
 - 'prefix' will use the `urlPrefix` to match routes
 
@@ -276,6 +279,10 @@ parameters:
     Determines the output format:
     - `true`: Returns the document as a YAML `string`.
     - `false` or omitted: Returns the document as a JavaScript object (`OpenAPI.Document`).
+
+## Contributing
+
+Contributions are welcome! We appreciate your interest in improving this project.
 
 ## License
 
