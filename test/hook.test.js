@@ -4,7 +4,7 @@ const { test } = require('node:test')
 const Fastify = require('fastify')
 
 test('should work with hook', async (t) => {
-  t.plan(6)
+  t.plan(7)
   const fastify = Fastify()
   t.after(() => fastify.close())
 
@@ -27,6 +27,9 @@ test('should work with hook', async (t) => {
           },
         },
       },
+      {
+        documentRef: 'bar',
+      },
     ],
   })
 
@@ -36,7 +39,12 @@ test('should work with hook', async (t) => {
     method: 'GET',
     url: '/doc-0/json',
   })
+  const res2 = await fastify.inject({
+    method: 'GET',
+    url: '/doc-1/json',
+  })
 
   t.assert.strictEqual(res.statusCode, 200)
   t.assert.strictEqual(hit, 2)
+  t.assert.strictEqual(res2.statusCode, 200)
 })
