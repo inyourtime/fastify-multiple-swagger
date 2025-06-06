@@ -50,6 +50,7 @@ function plugin(fastify, opts, next) {
       jsonPath,
       yamlPath,
       swaggerDecorator,
+      hooks: normalizedOptions.hooks,
     })
 
     const documentSource = {

@@ -62,6 +62,15 @@ app.register(fastifyMultipleSwagger, {
       documentRef: 'foo',
       routeSelector: 'prefix',
       urlPrefix: ['/foo', '/bar'],
+      hooks: {
+        onRequest: (req, _reply, done) => {
+          expect<string>().type.toBe(req.url)
+          done()
+        },
+        preHandler: async (req, _reply) => {
+          expect<string>().type.toBe(req.url)
+        },
+      },
     },
   ],
 })

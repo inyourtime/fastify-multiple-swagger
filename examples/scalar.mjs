@@ -35,12 +35,6 @@ const externalOption = {
 
 await app.register(fastifyMultipleSwagger, {
   documents: [internalOption, externalOption],
-  hooks: {
-    onRequest: (req, reply, next) => {
-      console.log('Internal onRequest')
-      next()
-    },
-  },
 })
 
 await app.register(Scalar, {
