@@ -1,5 +1,10 @@
 import type { FastifyDynamicSwaggerOptions, FastifyStaticSwaggerOptions } from '@fastify/swagger'
-import type { FastifyPluginAsync, RouteOptions } from 'fastify'
+import type {
+  FastifyPluginAsync,
+  RouteOptions,
+  onRequestHookHandler,
+  preHandlerHookHandler,
+} from 'fastify'
 import type { OpenAPI } from 'openapi-types'
 
 declare module 'fastify' {
@@ -125,7 +130,7 @@ declare namespace fastifyMultipleSwagger {
      *   json: '/swagger.json',
      *   yaml: false,
      * }
-     *
+     * ```
      */
     exposeRoute?: ExposeRouteOptions
     /**
@@ -143,6 +148,21 @@ declare namespace fastifyMultipleSwagger {
     meta?: {
       [key: string]: any
     }
+    /**
+     * The hooks to use for this document
+     * 
+     * @example
+     * ```js
+     * hooks: {
+     *   onRequest: (req, _reply, done) => {
+     *    console.log(req.url)
+     *    done()
+     *   },
+     * }
+     * ```
+     }
+     */
+    hooks?: HooksOptions
   }
 
   export type ExposeRouteOptions =
@@ -179,6 +199,11 @@ declare namespace fastifyMultipleSwagger {
     url: string
     name: string
   }
+
+  export type HooksOptions = Partial<{
+    onRequest?: onRequestHookHandler
+    preHandler?: preHandlerHookHandler
+  }>
 
   export const fastifyMultipleSwagger: FastifyMultipleSwagger
   export { fastifyMultipleSwagger as default }
