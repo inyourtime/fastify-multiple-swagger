@@ -130,7 +130,7 @@ declare namespace fastifyMultipleSwagger {
      *   json: '/swagger.json',
      *   yaml: false,
      * }
-     *
+     * ```
      */
     exposeRoute?: ExposeRouteOptions
     /**
@@ -150,6 +150,17 @@ declare namespace fastifyMultipleSwagger {
     }
     /**
      * The hooks to use for this document
+     * 
+     * @example
+     * ```js
+     * hooks: {
+     *   onRequest: (req, _reply, done) => {
+     *    console.log(req.url)
+     *    done()
+     *   },
+     * }
+     * ```
+     }
      */
     hooks?: HooksOptions
   }

@@ -177,6 +177,9 @@ await fastify.register(SwaggerUI, {
 - `swaggerOptions` (optional): Configuration passed to @fastify/swagger
 - `name` (optional): Display name for the UI providers
 - `meta` (optional): Additional metadata for UI providers configuration
+- `hooks` (optional): Fastify hooks to be applied to the document routes
+  - Supports Fastify hook types (onRequest, preHandler)
+  - Useful for adding authentication or custom middleware to specific document routes
 
 ### Route Selection
 
@@ -245,6 +248,63 @@ Note: The `routeSelector` takes precedence over `urlPrefix` when both are provid
 
 - 'ref' will use the `documentRef` to match routes
 - 'prefix' will use the `urlPrefix` to match routes
+
+### Using Hooks for Document Protection
+
+You can use hooks to add authentication or custom middleware to specific document routes. Here's an example using basic authentication:
+
+```javascript
+import Fastify from "fastify";
+import fastifyMultipleSwagger from "fastify-multiple-swagger";
+import fastifyBasicAuth from "@fastify/basic-auth";
+
+const fastify = Fastify();
+
+// Register basic auth plugin
+await fastify.register(fastifyBasicAuth, {
+  validate(username, password, _req, _reply, done) {
+    if (username === 'admin' && password === 'admin') {
+      done();
+    } else {
+      done(new Error('Invalid credentials'));
+    }
+  },
+  authenticate: true,
+});
+
+await fastify.register(fastifyMultipleSwagger, {
+  documents: [
+    {
+      documentRef: "internal",
+      hooks: {
+        onRequest: fastify.basicAuth, // Protect this document with basic auth
+      },
+      swaggerOptions: {
+        openapi: {
+          info: {
+            title: "Internal API",
+            version: "1.0.0",
+          },
+        },
+      },
+    },
+    {
+      documentRef: "public",
+      swaggerOptions: {
+        openapi: {
+          info: {
+            title: "Public API",
+            version: "1.0.0",
+          },
+        },
+      },
+    },
+  ],
+});
+
+// The internal document will require basic auth
+// The public document will be accessible without authentication
+```
 
 ## API
 
