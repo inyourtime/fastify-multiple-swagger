@@ -86,7 +86,7 @@ const externalDoc = fastify.getDocument("external");
 |--------|------|----------|-------------|
 | `documentRef` | `string` | ✅ | Unique identifier for the document |
 | `name` | `string` | ❌ | Display name for UI providers |
-| `swaggerOptions` | `object` | ❌ | Configuration passed to @fastify/swagger |
+| `swaggerOptions` | `object` | ❌ | Configuration passed to [@fastify/swagger](https://github.com/fastify/fastify-swagger) |
 | `routeSelector` | `string \| function` | ❌ | How to select routes: `'ref'`, `'prefix'`, or custom function |
 | `urlPrefix` | `string \| string[]` | ❌ | URL prefix(es) to filter routes |
 | `exposeRoute` | `boolean \| object` | ❌ | Control JSON/YAML route exposure |
@@ -103,7 +103,7 @@ const externalDoc = fastify.getDocument("external");
 
 ## Integration Examples
 
-### With Scalar API Reference
+### With [Scalar API Reference](https://github.com/scalar/scalar/tree/main/integrations/fastify)
 
 ```javascript
 import Scalar from "@scalar/fastify-api-reference";
@@ -131,7 +131,7 @@ await fastify.register(Scalar, {
 });
 ```
 
-### With Swagger UI
+### With [Swagger UI](https://github.com/fastify/fastify-swagger-ui)
 
 ```javascript
 import SwaggerUI from "@fastify/swagger-ui";
@@ -233,8 +233,8 @@ Get document sources for UI integration.
 {
   documentRef: "api",
   exposeRoute: {
-    json: true,    // Expose /api.json
-    yaml: false    // Don't expose /api.yaml
+    json: true,
+    yaml: false
   }
 }
 ```
@@ -251,7 +251,7 @@ Get document sources for UI integration.
 
 ## Contributing
 
-Contributions welcome! Please check our [contribution guidelines](CONTRIBUTING.md).
+Contributions welcome!
 
 ## License
 
