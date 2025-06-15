@@ -144,13 +144,13 @@ app.route({
   handler: () => {},
 })
 
-expect<Array<DocumentSource>>().type.toBe(app.getDocumentSources())
-expect<Array<ScalarSource>>().type.toBe(app.getDocumentSources({ scalar: true }))
-expect<Array<SwaggerUISource>>().type.toBe(app.getDocumentSources({ swaggerUI: true }))
-expect(app.getDocumentSources({ scalar: true, swaggerUI: true })).type.toRaiseError()
-expect(app.getDocumentSources({ scalar: false })).type.toRaiseError()
+expect(app.getDocumentSources()).type.toBe<Array<DocumentSource>>()
+expect(app.getDocumentSources({ scalar: true })).type.toBe<Array<ScalarSource>>()
+expect(app.getDocumentSources({ swaggerUI: true })).type.toBe<Array<SwaggerUISource>>()
+expect(app.getDocumentSources).type.not.toBeCallableWith({ scalar: true, swaggerUI: true })
+expect(app.getDocumentSources).type.not.toBeCallableWith({ scalar: false })
 
-expect(app.getDocument()).type.toRaiseError()
-expect<OpenAPI.Document>().type.toBe(app.getDocument('foo'))
-expect<OpenAPI.Document>().type.toBe(app.getDocument('foo', { yaml: false }))
-expect<string>().type.toBe(app.getDocument('foo', { yaml: true }))
+expect(app.getDocument).type.not.toBeCallableWith()
+expect(app.getDocument('foo')).type.toBe<OpenAPI.Document>()
+expect(app.getDocument('foo', { yaml: false })).type.toBe<OpenAPI.Document>()
+expect(app.getDocument('foo', { yaml: true })).type.toBe<string>()
