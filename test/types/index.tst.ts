@@ -1,8 +1,7 @@
-import Fastify from 'fastify'
 import type { RouteOptions } from 'fastify'
+import Fastify from 'fastify'
 import type { OpenAPI } from 'openapi-types'
 import { expect } from 'tstyche'
-import fastifyMultipleSwagger from '../..'
 import type {
   DocumentConfig,
   DocumentSource,
@@ -10,6 +9,7 @@ import type {
   ScalarSource,
   SwaggerUISource,
 } from '../..'
+import fastifyMultipleSwagger from '../..'
 
 const app = Fastify()
 

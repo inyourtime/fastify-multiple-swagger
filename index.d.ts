@@ -21,9 +21,7 @@ declare module 'fastify' {
      */
     getDocumentSources: (() => Array<fastifyMultipleSwagger.DocumentSource>) &
       ((opts: { scalar: true }) => Array<fastifyMultipleSwagger.ScalarSource>) &
-      ((opts: {
-        swaggerUI: true
-      }) => Array<fastifyMultipleSwagger.SwaggerUISource>)
+      ((opts: { swaggerUI: true }) => Array<fastifyMultipleSwagger.SwaggerUISource>)
 
     /**
      * Returns a swagger document by documentRef
