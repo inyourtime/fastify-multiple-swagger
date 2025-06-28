@@ -715,3 +715,80 @@ test('routeSelector with "prefix" and "urlPrefix" as an empty array', async (t) 
     )
   }
 })
+
+/**
+ * @see https://github.com/inyourtime/fastify-route-preset
+ */
+test('should work with "fastify-route-preset" plugin', async (t) => {
+  t.plan(3)
+  const fastify = Fastify()
+  t.after(() => fastify.close())
+
+  fastify.register(require('fastify-route-preset'), {
+    onPresetRoute: (routeOptions, preset) => {
+      routeOptions.config = {
+        ...preset,
+        ...routeOptions.config,
+      }
+    },
+  })
+
+  await fastify.register(require('..'), {
+    documents: [{ documentRef: 'foo' }, { documentRef: 'bar' }],
+  })
+
+  fastify.register(
+    async (fastify) => {
+      fastify.get(
+        '/foo',
+        {
+          schema: { querystring: { type: 'object', properties: { name: { type: 'string' } } } },
+        },
+        () => {},
+      )
+    },
+    {
+      preset: {
+        documentRef: 'foo',
+      },
+    },
+  )
+
+  fastify.register(
+    async (fastify) => {
+      fastify.get(
+        '/bar',
+        {
+          schema: { querystring: { type: 'object', properties: { name: { type: 'string' } } } },
+        },
+        () => {},
+      )
+
+      fastify.get(
+        '/bar2',
+        {
+          schema: { querystring: { type: 'object', properties: { name: { type: 'string' } } } },
+        },
+        () => {},
+      )
+    },
+    {
+      preset: {
+        documentRef: 'bar',
+      },
+    },
+  )
+
+  await fastify.ready()
+
+  const apiFoo = await Swagger.validate(fastify[getDecoratorName('foo')]())
+  const apiBar = await Swagger.validate(fastify[getDecoratorName('bar')]())
+
+  const definedPathFoo = apiFoo.paths['/foo']?.get
+  const definedPathBar = apiBar.paths['/bar']?.get
+  const definedPathBar2 = apiBar.paths['/bar2']?.get
+
+  t.assert.ok(definedPathFoo)
+  t.assert.ok(definedPathBar)
+  t.assert.ok(definedPathBar2)
+})

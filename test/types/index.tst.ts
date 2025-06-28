@@ -64,11 +64,11 @@ app.register(fastifyMultipleSwagger, {
       urlPrefix: ['/foo', '/bar'],
       hooks: {
         onRequest: (req, _reply, done) => {
-          expect<string>().type.toBe(req.url)
+          expect(req.url).type.toBe<string>()
           done()
         },
         preHandler: async (req, _reply) => {
-          expect<string>().type.toBe(req.url)
+          expect(req.url).type.toBe<string>()
         },
       },
     },
@@ -83,8 +83,8 @@ app.register(fastifyMultipleSwagger, {
         yaml: '/swagger.yaml',
       },
       routeSelector(routeOptions, url) {
-        expect<string>().type.toBe(url)
-        expect<RouteOptions>().type.toBe(routeOptions)
+        expect(url).type.toBe<string>()
+        expect(routeOptions).type.toBe<RouteOptions>()
         return true
       },
     },
