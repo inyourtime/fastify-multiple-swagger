@@ -19,9 +19,7 @@ export default async function (app) {
         documentRef: 'external',
       },
     },
-    (req, reply) => {
-      reply.send(req.body)
-    },
+    () => {},
   )
 
   app.put(
@@ -41,8 +39,6 @@ export default async function (app) {
         documentRef: 'external',
       },
     },
-    (req, reply) => {
-      reply.send(req.body)
-    },
+    () => {},
   )
 }

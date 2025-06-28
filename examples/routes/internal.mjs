@@ -19,9 +19,7 @@ export default async function (app) {
         documentRef: 'internal',
       },
     },
-    (req, reply) => {
-      reply.send(req.query)
-    },
+    () => {},
   )
 
   app.post(
@@ -41,8 +39,6 @@ export default async function (app) {
         documentRef: 'internal',
       },
     },
-    (req, reply) => {
-      reply.send(req.body)
-    },
+    () => {},
   )
 }
