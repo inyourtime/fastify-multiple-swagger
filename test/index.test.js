@@ -30,7 +30,7 @@ test('should generate multiple documents #documentRef', async (t) => {
         documentRef: 'foo',
       },
     },
-    (req) => req.query,
+    () => {},
   )
 
   fastify.get(
@@ -41,7 +41,7 @@ test('should generate multiple documents #documentRef', async (t) => {
         documentRef: 'bar',
       },
     },
-    (req) => req.query,
+    () => {},
   )
 
   await fastify.ready()
@@ -78,7 +78,7 @@ test('should generate multiple documents #endpoint', async (t) => {
         documentRef: 'foo',
       },
     },
-    (req) => req.query,
+    () => {},
   )
 
   fastify.get(
@@ -89,7 +89,7 @@ test('should generate multiple documents #endpoint', async (t) => {
         documentRef: 'bar',
       },
     },
-    (req) => req.query,
+    () => {},
   )
 
   await fastify.ready()
@@ -256,7 +256,7 @@ test('should work with "defaultDocumentRef"', async (t) => {
     {
       schema: { querystring: { type: 'object', properties: { name: { type: 'string' } } } },
     },
-    (req) => req.query,
+    () => {},
   )
 
   await fastify.ready()
@@ -525,7 +525,7 @@ test('routeSelector with "ref"', async (t) => {
         documentRef: 'foo',
       },
     },
-    (req) => req.query,
+    () => {},
   )
 
   fastify.get(
@@ -536,7 +536,7 @@ test('routeSelector with "ref"', async (t) => {
         documentRef: 'bar',
       },
     },
-    (req) => req.query,
+    () => {},
   )
 
   await fastify.ready()
@@ -563,7 +563,7 @@ test('routeSelector with "prefix"', async (t) => {
     {
       schema: { querystring: { type: 'object', properties: { name: { type: 'string' } } } },
     },
-    (req) => req.query,
+    () => {},
   )
 
   fastify.get(
@@ -571,7 +571,7 @@ test('routeSelector with "prefix"', async (t) => {
     {
       schema: { querystring: { type: 'object', properties: { name: { type: 'string' } } } },
     },
-    (req) => req.query,
+    () => {},
   )
 
   await fastify.ready()
@@ -606,7 +606,7 @@ test('routeSelector with custom function', async (t) => {
       schema: { querystring: { type: 'object', properties: { name: { type: 'string' } } } },
       config: { documentRef: 'foo' },
     },
-    (req) => req.query,
+    () => {},
   )
 
   fastify.get(
@@ -614,7 +614,7 @@ test('routeSelector with custom function', async (t) => {
     {
       schema: { querystring: { type: 'object', properties: { name: { type: 'string' } } } },
     },
-    (req) => req.query,
+    () => {},
   )
 
   await fastify.ready()
@@ -677,7 +677,7 @@ test('routeSelector with "prefix" and "urlPrefix" as an array', async (t) => {
     {
       schema: { querystring: { type: 'object', properties: { name: { type: 'string' } } } },
     },
-    (req) => req.query,
+    () => {},
   )
 
   fastify.get(
@@ -685,7 +685,7 @@ test('routeSelector with "prefix" and "urlPrefix" as an array', async (t) => {
     {
       schema: { querystring: { type: 'object', properties: { name: { type: 'string' } } } },
     },
-    (req) => req.query,
+    () => {},
   )
 
   await fastify.ready()
