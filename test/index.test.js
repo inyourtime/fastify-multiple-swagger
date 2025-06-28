@@ -720,7 +720,7 @@ test('routeSelector with "prefix" and "urlPrefix" as an empty array', async (t) 
  * @see https://github.com/inyourtime/fastify-route-preset
  */
 test('should work with "fastify-route-preset" plugin', async (t) => {
-  t.plan(2)
+  t.plan(3)
   const fastify = Fastify()
   t.after(() => fastify.close())
 
@@ -763,6 +763,14 @@ test('should work with "fastify-route-preset" plugin', async (t) => {
         },
         () => {},
       )
+
+      fastify.get(
+        '/bar2',
+        {
+          schema: { querystring: { type: 'object', properties: { name: { type: 'string' } } } },
+        },
+        () => {},
+      )
     },
     {
       preset: {
@@ -778,7 +786,9 @@ test('should work with "fastify-route-preset" plugin', async (t) => {
 
   const definedPathFoo = apiFoo.paths['/foo']?.get
   const definedPathBar = apiBar.paths['/bar']?.get
+  const definedPathBar2 = apiBar.paths['/bar2']?.get
 
   t.assert.ok(definedPathFoo)
   t.assert.ok(definedPathBar)
+  t.assert.ok(definedPathBar2)
 })
