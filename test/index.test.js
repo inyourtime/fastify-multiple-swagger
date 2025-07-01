@@ -508,13 +508,13 @@ test('getDocument with YAML option', async (t) => {
   t.assert.ok(specJson.swagger)
 })
 
-test('routeSelector with "ref"', async (t) => {
+test('should work with only "documentRef" option', async (t) => {
   t.plan(2)
   const fastify = Fastify()
   t.after(() => fastify.close())
 
   await fastify.register(require('..'), {
-    documents: [{ documentRef: 'foo', routeSelector: 'ref' }],
+    documents: [{ documentRef: 'foo' }],
   })
 
   fastify.get(
@@ -549,13 +549,13 @@ test('routeSelector with "ref"', async (t) => {
   t.assert.strictEqual(definedPathBar, undefined)
 })
 
-test('routeSelector with "prefix"', async (t) => {
+test('should work with "urlPrefix" option', async (t) => {
   t.plan(2)
   const fastify = Fastify()
   t.after(() => fastify.close())
 
   await fastify.register(require('..'), {
-    documents: [{ documentRef: 'foo', routeSelector: 'prefix', urlPrefix: '/foo' }],
+    documents: [{ documentRef: 'foo', urlPrefix: '/foo' }],
   })
 
   fastify.get(
@@ -584,7 +584,7 @@ test('routeSelector with "prefix"', async (t) => {
   t.assert.strictEqual(definedPathBar, undefined)
 })
 
-test('routeSelector with custom function', async (t) => {
+test('should work with "routeSelector" option', async (t) => {
   t.plan(2)
   const fastify = Fastify()
   t.after(() => fastify.close())
@@ -634,42 +634,21 @@ test('invalid routeSelector', async (t) => {
 
   try {
     await fastify.register(require('..'), {
-      documents: [{ documentRef: 'foo', routeSelector: 'foo', urlPrefix: '/foo' }],
+      documents: [{ documentRef: 'foo', routeSelector: 'foo' }],
     })
   } catch (err) {
     t.assert.ok(err)
-    t.assert.strictEqual(
-      err.message,
-      '"routeSelector" option must be one of "ref", "prefix" or a function',
-    )
+    t.assert.strictEqual(err.message, '"routeSelector" option must be a function')
   }
 })
 
-test('require urlPrefix when use routeSelector "prefix"', async (t) => {
-  t.plan(2)
-  const fastify = Fastify()
-  t.after(() => fastify.close())
-
-  try {
-    await fastify.register(require('..'), {
-      documents: [{ documentRef: 'foo', routeSelector: 'prefix' }],
-    })
-  } catch (err) {
-    t.assert.ok(err)
-    t.assert.strictEqual(
-      err.message,
-      '"urlPrefix" option is required when "routeSelector" is "prefix"',
-    )
-  }
-})
-
-test('routeSelector with "prefix" and "urlPrefix" as an array', async (t) => {
+test('should work with "urlPrefix" option as array', async (t) => {
   t.plan(2)
   const fastify = Fastify()
   t.after(() => fastify.close())
 
   await fastify.register(require('..'), {
-    documents: [{ documentRef: 'foo', routeSelector: 'prefix', urlPrefix: ['/foo', '/bar'] }],
+    documents: [{ documentRef: 'foo', urlPrefix: ['/foo', '/bar'] }],
   })
 
   fastify.get(
@@ -698,21 +677,42 @@ test('routeSelector with "prefix" and "urlPrefix" as an array', async (t) => {
   t.assert.ok(definedPathBar)
 })
 
-test('routeSelector with "prefix" and "urlPrefix" as an empty array', async (t) => {
+test("should error when both 'routeSelector' and 'urlPrefix' are set", async (t) => {
   t.plan(2)
   const fastify = Fastify()
   t.after(() => fastify.close())
 
   try {
     await fastify.register(require('..'), {
-      documents: [{ documentRef: 'foo', routeSelector: 'prefix', urlPrefix: [] }],
+      documents: [
+        {
+          documentRef: 'foo',
+          routeSelector: () => true,
+          urlPrefix: '/foo',
+        },
+      ],
     })
   } catch (err) {
     t.assert.ok(err)
     t.assert.strictEqual(
       err.message,
-      '"urlPrefix" option is required when "routeSelector" is "prefix"',
+      '"routeSelector" and "urlPrefix" options cannot be used together. Please provide only one',
     )
+  }
+})
+
+test('invalid "urlPrefix" option', async (t) => {
+  t.plan(2)
+  const fastify = Fastify()
+  t.after(() => fastify.close())
+
+  try {
+    await fastify.register(require('..'), {
+      documents: [{ documentRef: 'foo', urlPrefix: 1 }],
+    })
+  } catch (err) {
+    t.assert.ok(err)
+    t.assert.strictEqual(err.message, '"urlPrefix" option must be a string or an array of strings')
   }
 })
 
@@ -791,4 +791,32 @@ test('should work with "fastify-route-preset" plugin', async (t) => {
   t.assert.ok(definedPathFoo)
   t.assert.ok(definedPathBar)
   t.assert.ok(definedPathBar2)
+})
+
+test('should work with config "documentRef" as a array', async (t) => {
+  t.plan(2)
+  const fastify = Fastify()
+  t.after(() => fastify.close())
+
+  await fastify.register(require('..'), {
+    documents: [{ documentRef: 'foo' }, { documentRef: 'bar' }],
+  })
+
+  fastify.get(
+    '/foo',
+    {
+      schema: { querystring: { type: 'object', properties: { name: { type: 'string' } } } },
+      config: { documentRef: ['bar', 'foo'] },
+    },
+    () => {},
+  )
+
+  await fastify.ready()
+
+  const apiFoo = await Swagger.validate(fastify[getDecoratorName('foo')]())
+  const apiBar = await Swagger.validate(fastify[getDecoratorName('bar')]())
+  const definedPathFoo = apiFoo.paths['/foo']?.get
+  const definedPathBar = apiBar.paths['/foo']?.get
+  t.assert.ok(definedPathFoo)
+  t.assert.ok(definedPathBar)
 })

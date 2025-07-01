@@ -43,7 +43,7 @@ declare module 'fastify' {
     /**
      * Swagger document reference used for this route
      */
-    documentRef?: string
+    documentRef?: string | string[]
   }
 }
 
@@ -77,28 +77,8 @@ declare namespace fastifyMultipleSwagger {
      */
     documentRef: string
     /**
-     * Determines how routes are matched to this Swagger document.
-     *
-     * - 'ref': matches based on the `documentRef` manually assigned to routes config
-     * - 'prefix': matches based on the `urlPrefix` used in the route path
-     * - function: matches based on a custom function
-     *
-     * @default 'ref'
-     *
-     * @example
-     * ```js
-     * routeSelector: 'ref'
-     * routeSelector: 'prefix'
-     * routeSelector: (routeOptions, url) => {
-     *   return routeOptions.config?.documentRef === 'foo' && url.startsWith('/foo')
-     * }
-     * ```
-     */
-    routeSelector?: 'ref' | 'prefix' | ((routeOptions: RouteOptions, url: string) => boolean)
-    /**
      * URL path prefix used to match routes to this Swagger document
      *
-     * Only used when `routeSelector` is set to `'prefix'`.
      * If a route starts with this prefix, it will be associated with this document.
      *
      * Example:
@@ -110,6 +90,17 @@ declare namespace fastifyMultipleSwagger {
      * ```
      */
     urlPrefix?: `/${string}` | Array<`/${string}`>
+    /**
+     * Determines how routes are matched to this Swagger document.
+     *
+     * @example
+     * ```js
+     * routeSelector: (routeOptions, url) => {
+     *   return routeOptions.config?.documentRef === 'foo' && url.startsWith('/foo')
+     * }
+     * ```
+     */
+    routeSelector?: (routeOptions: RouteOptions, url: string) => boolean
     /**
      * Configuration for exposing JSON/YAML routes
      * Can be boolean or object with `json` and `yaml` as booleans or strings

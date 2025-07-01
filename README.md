@@ -87,8 +87,8 @@ const externalDoc = fastify.getDocument("external");
 | `documentRef` | `string` | ✅ | Unique identifier for the document |
 | `name` | `string` | ❌ | Display name for UI providers |
 | `swaggerOptions` | `object` | ❌ | Configuration passed to [@fastify/swagger](https://github.com/fastify/fastify-swagger) |
-| `routeSelector` | `string \| function` | ❌ | How to select routes: `'ref'`, `'prefix'`, or custom function |
 | `urlPrefix` | `string \| string[]` | ❌ | URL prefix(es) to filter routes |
+| `routeSelector` | `(routeOptions, url) => boolean` | ❌ | How to select routes |
 | `exposeRoute` | `boolean \| object` | ❌ | Control JSON/YAML route exposure |
 | `meta` | `object` | ❌ | Additional metadata for UI configuration |
 | `hooks` | `object` | ❌ | Fastify hooks for document routes |
@@ -100,6 +100,8 @@ const externalDoc = fastify.getDocument("external");
 | **By Reference** | Routes specify `documentRef` in config | `config: { documentRef: "internal" }` |
 | **By URL Prefix** | Routes starting with prefix are included | `urlPrefix: "/api/v1"` |
 | **Custom Function** | Custom logic determines inclusion | `(routeOptions, url) => routeOptions.schema?.tags?.includes('public')` |
+
+> **Note:** `routeSelector` and `urlPrefix` options cannot be used together. Please provide only one.
 
 ## Integration Examples
 
@@ -151,8 +153,7 @@ await fastify.register(SwaggerUI, {
 ```javascript
 {
   documentRef: "v1",
-  urlPrefix: "/api/v1",
-  routeSelector: "prefix"
+  urlPrefix: "/api/v1"
 }
 ```
 
@@ -244,14 +245,13 @@ Get document sources for UI integration.
 ```javascript
 {
   documentRef: "admin",
-  urlPrefix: ["/admin", "/management"],
-  routeSelector: "prefix"
+  urlPrefix: ["/admin", "/management"]
 }
 ```
 
 ## Contributing
 
-Contributions welcome!
+Contributions are welcome!
 
 ## License
 
