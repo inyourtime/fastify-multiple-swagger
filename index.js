@@ -14,7 +14,13 @@ function plugin(fastify, opts, next) {
   const documentSources = []
 
   for (const [index, documentOptions] of opts.documents.entries()) {
-    const normalizedOptions = normalizeDocumentOptions(documentOptions, next)
+    let normalizedOptions
+    try {
+      normalizedOptions = normalizeDocumentOptions(documentOptions)
+    } catch (err) {
+      return next(err)
+    }
+
     const swaggerDecorator = getDecoratorName(normalizedOptions.documentRef)
 
     // Register swagger instance
@@ -90,19 +96,18 @@ function plugin(fastify, opts, next) {
  * If the document options is an object, it must contain the `documentRef` property.
  *
  * @param {string | DocumentConfig} documentOptions - Document options
- * @param {Function} next - The callback to be called on error
  * @returns {DocumentConfig} Normalized document options
  */
-function normalizeDocumentOptions(documentOptions, next) {
+function normalizeDocumentOptions(documentOptions) {
   const normalizedOptions =
     typeof documentOptions === 'string' ? { documentRef: documentOptions } : documentOptions
 
   if (typeof normalizedOptions !== 'object') {
-    next(new TypeError('"documents" option must be an array of objects or strings'))
+    throw new TypeError('"documents" option must be an array of objects or strings')
   }
 
   if (typeof normalizedOptions.documentRef !== 'string') {
-    next(new TypeError('"documentRef" option must be a string'))
+    throw new TypeError('"documentRef" option must be a string')
   }
 
   return normalizedOptions
