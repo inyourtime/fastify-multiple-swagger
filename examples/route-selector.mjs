@@ -21,7 +21,6 @@ await app.register(fastifyMultipleSwagger, {
     },
     {
       documentRef: 'v2',
-      routeSelector: 'prefix',
       urlPrefix: '/api/v2',
       swaggerOptions: {
         openapi: {

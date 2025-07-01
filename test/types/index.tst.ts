@@ -1,4 +1,4 @@
-import type { RouteOptions } from 'fastify'
+import type { FastifyContextConfig, RouteOptions } from 'fastify'
 import Fastify from 'fastify'
 import type { OpenAPI } from 'openapi-types'
 import { expect } from 'tstyche'
@@ -26,7 +26,6 @@ app.register(fastifyMultipleSwagger, {
     {
       documentRef: 'foo',
       exposeRoute: false,
-      routeSelector: 'ref',
       swaggerOptions: {
         openapi: {
           info: {
@@ -51,7 +50,6 @@ app.register(fastifyMultipleSwagger, {
         default: true,
         slug: 'foo',
       },
-      routeSelector: 'prefix',
       urlPrefix: '/api/v1',
     },
   ],
@@ -60,7 +58,6 @@ app.register(fastifyMultipleSwagger, {
   documents: [
     {
       documentRef: 'foo',
-      routeSelector: 'prefix',
       urlPrefix: ['/foo', '/bar'],
       hooks: {
         onRequest: (req, _reply, done) => {
@@ -144,6 +141,9 @@ app.route({
   handler: () => {},
 })
 
+expect(app).type.toHaveProperty('getDocumentSources')
+expect(app).type.toHaveProperty('getDocument')
+
 expect(app.getDocumentSources()).type.toBe<Array<DocumentSource>>()
 expect(app.getDocumentSources({ scalar: true })).type.toBe<Array<ScalarSource>>()
 expect(app.getDocumentSources({ swaggerUI: true })).type.toBe<Array<SwaggerUISource>>()
@@ -154,3 +154,11 @@ expect(app.getDocument).type.not.toBeCallableWith()
 expect(app.getDocument('foo')).type.toBe<OpenAPI.Document>()
 expect(app.getDocument('foo', { yaml: false })).type.toBe<OpenAPI.Document>()
 expect(app.getDocument('foo', { yaml: true })).type.toBe<string>()
+
+expect({ documentRef: 'foo', routeSelector: 'ref' }).type.not.toBeAssignableTo<DocumentConfig>()
+expect({ documentRef: 'foo', routeSelector: 'prefix' }).type.not.toBeAssignableTo<DocumentConfig>()
+expect({ documentRef: 'foo', routeSelector: () => true }).type.toBeAssignableTo<DocumentConfig>()
+
+expect({ documentRef: true }).type.not.toBeAssignableTo<FastifyContextConfig>()
+expect({ documentRef: 'foo' }).type.toBeAssignableTo<FastifyContextConfig>()
+expect({ documentRef: ['foo', 'bar'] }).type.toBeAssignableTo<FastifyContextConfig>()
