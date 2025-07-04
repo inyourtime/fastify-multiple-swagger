@@ -13,6 +13,12 @@ A Fastify plugin that generates multiple Swagger/OpenAPI documents using [@fasti
 npm install fastify-multiple-swagger
 ```
 
+## Compatibility
+
+| Plugin Version | Fastify Version |
+|:--------------:|:---------------:|
+| `>=1.x`        | `^5.x`          |
+
 ## Quick Start
 
 ```javascript
