@@ -8,8 +8,8 @@ import type {
   FastifyMultipleSwaggerOptions,
   ScalarSource,
   SwaggerUISource,
-} from '../..'
-import fastifyMultipleSwagger from '../..'
+} from '..'
+import fastifyMultipleSwagger from '..'
 
 const app = Fastify()
 
@@ -147,7 +147,10 @@ expect(app).type.toHaveProperty('getDocument')
 expect(app.getDocumentSources()).type.toBe<Array<DocumentSource>>()
 expect(app.getDocumentSources({ scalar: true })).type.toBe<Array<ScalarSource>>()
 expect(app.getDocumentSources({ swaggerUI: true })).type.toBe<Array<SwaggerUISource>>()
-expect(app.getDocumentSources).type.not.toBeCallableWith({ scalar: true, swaggerUI: true })
+expect(app.getDocumentSources).type.not.toBeCallableWith({
+  scalar: true,
+  swaggerUI: true,
+})
 expect(app.getDocumentSources).type.not.toBeCallableWith({ scalar: false })
 
 expect(app.getDocument).type.not.toBeCallableWith()
@@ -155,10 +158,21 @@ expect(app.getDocument('foo')).type.toBe<OpenAPI.Document>()
 expect(app.getDocument('foo', { yaml: false })).type.toBe<OpenAPI.Document>()
 expect(app.getDocument('foo', { yaml: true })).type.toBe<string>()
 
-expect({ documentRef: 'foo', routeSelector: 'ref' }).type.not.toBeAssignableTo<DocumentConfig>()
-expect({ documentRef: 'foo', routeSelector: 'prefix' }).type.not.toBeAssignableTo<DocumentConfig>()
-expect({ documentRef: 'foo', routeSelector: () => true }).type.toBeAssignableTo<DocumentConfig>()
+expect({
+  documentRef: 'foo',
+  routeSelector: 'ref',
+}).type.not.toBeAssignableTo<DocumentConfig>()
+expect({
+  documentRef: 'foo',
+  routeSelector: 'prefix',
+}).type.not.toBeAssignableTo<DocumentConfig>()
+expect({
+  documentRef: 'foo',
+  routeSelector: () => true,
+}).type.toBeAssignableTo<DocumentConfig>()
 
 expect({ documentRef: true }).type.not.toBeAssignableTo<FastifyContextConfig>()
 expect({ documentRef: 'foo' }).type.toBeAssignableTo<FastifyContextConfig>()
-expect({ documentRef: ['foo', 'bar'] }).type.toBeAssignableTo<FastifyContextConfig>()
+expect({
+  documentRef: ['foo', 'bar'],
+}).type.toBeAssignableTo<FastifyContextConfig>()
