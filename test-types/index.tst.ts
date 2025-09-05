@@ -8,8 +8,8 @@ import type {
   FastifyMultipleSwaggerOptions,
   ScalarSource,
   SwaggerUISource,
-} from '../..'
-import fastifyMultipleSwagger from '../..'
+} from '..'
+import fastifyMultipleSwagger from '..'
 
 const app = Fastify()
 
