@@ -2,6 +2,7 @@
 
 const { test } = require('node:test')
 const Fastify = require('fastify')
+const Scalar = require('@scalar/fastify-api-reference')
 
 test('should work with scalar #default config', async (t) => {
   t.plan(5)
@@ -12,7 +13,6 @@ test('should work with scalar #default config', async (t) => {
     documents: [{ documentRef: 'swagger1' }, { documentRef: 'swagger2' }],
   })
 
-  const Scalar = await import('@scalar/fastify-api-reference')
   await fastify.register(Scalar, {
     routePrefix: '/reference',
     configuration: {
@@ -53,7 +53,6 @@ test('should work with scalar #custom config', async (t) => {
     ],
   })
 
-  const Scalar = await import('@scalar/fastify-api-reference')
   await fastify.register(Scalar, {
     routePrefix: '/reference',
     configuration: {
