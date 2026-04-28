@@ -1,9 +1,9 @@
 import type { FastifyDynamicSwaggerOptions, FastifyStaticSwaggerOptions } from '@fastify/swagger'
 import type {
   FastifyPluginAsync,
-  RouteOptions,
   onRequestHookHandler,
   preHandlerHookHandler,
+  RouteOptions,
 } from 'fastify'
 import type { OpenAPI } from 'openapi-types'
 
