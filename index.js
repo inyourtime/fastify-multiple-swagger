@@ -1,7 +1,7 @@
-'use strict'
-
-const fp = require('fastify-plugin')
-const { getExposeRouteOptions, getDecoratorName } = require('./lib/utils')
+import fp from 'fastify-plugin'
+import routePlugin from './lib/route.js'
+import swaggerPlugin from './lib/swagger.js'
+import { getDecoratorName, getExposeRouteOptions } from './lib/utils.js'
 
 /**
  * @type {import('fastify').FastifyPluginCallback<import('.').FastifyMultipleSwaggerOptions>}
@@ -24,7 +24,7 @@ function plugin(fastify, opts, next) {
     const swaggerDecorator = getDecoratorName(normalizedOptions.documentRef)
 
     // Register swagger instance
-    fastify.register(require('./lib/swagger'), {
+    fastify.register(swaggerPlugin, {
       ...normalizedOptions,
       defaultDocumentRef: opts.defaultDocumentRef,
       swaggerDecorator,
@@ -34,7 +34,7 @@ function plugin(fastify, opts, next) {
     const routePrefix = opts.routePrefix
 
     // Register route for json/yaml
-    fastify.register(require('./lib/route'), {
+    fastify.register(routePlugin, {
       ...opts,
       prefix: routePrefix,
       ...routeConfig,
@@ -115,7 +115,7 @@ function normalizeDocumentOptions(documentOptions) {
 
 /**
  * @typedef {Object} RouteConfig
- * @property {import('./lib/utils').ExposeRouteOptions} exposeRoute - The expose route options
+ * @property {import('./lib/utils.js').ExposeRouteOptions} exposeRoute - The expose route options
  * @property {string} jsonPath - The path to the JSON documentation
  * @property {string} yamlPath - The path to the YAML documentation
  */
@@ -180,6 +180,6 @@ const fastifyMultipleSwagger = fp(plugin, {
   fastify: '5.x',
   name: 'fastify-multiple-swagger',
 })
-module.exports = fastifyMultipleSwagger
-module.exports.default = fastifyMultipleSwagger
-module.exports.fastifyMultipleSwagger = fastifyMultipleSwagger
+
+export { fastifyMultipleSwagger }
+export default fastifyMultipleSwagger

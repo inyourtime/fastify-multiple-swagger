@@ -1,7 +1,7 @@
-'use strict'
-
-const { test } = require('node:test')
-const Fastify = require('fastify')
+import { test } from 'node:test'
+import basicAuth from '@fastify/basic-auth'
+import Fastify from 'fastify'
+import fastifyMultipleSwagger from '../index.js'
 
 const authOptions = {
   validate(username, password, _req, _reply, done) {
@@ -25,7 +25,7 @@ test('should work with hook', async (t) => {
 
   let hit = 0
 
-  await fastify.register(require('..'), {
+  await fastify.register(fastifyMultipleSwagger, {
     documents: [
       {
         documentRef: 'foo',
@@ -69,9 +69,9 @@ test('returns 200 OK for protected route with basic auth', async (t) => {
   const fastify = Fastify()
   t.after(() => fastify.close())
 
-  await fastify.register(require('@fastify/basic-auth'), authOptions)
+  await fastify.register(basicAuth, authOptions)
 
-  await fastify.register(require('..'), {
+  await fastify.register(fastifyMultipleSwagger, {
     documents: [
       {
         documentRef: 'foo',
@@ -106,9 +106,9 @@ test('returns 401 for protected route with basic auth', async (t) => {
   const fastify = Fastify()
   t.after(() => fastify.close())
 
-  await fastify.register(require('@fastify/basic-auth'), authOptions)
+  await fastify.register(basicAuth, authOptions)
 
-  await fastify.register(require('..'), {
+  await fastify.register(fastifyMultipleSwagger, {
     documents: [
       {
         documentRef: 'foo',

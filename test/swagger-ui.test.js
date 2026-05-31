@@ -1,15 +1,14 @@
-'use strict'
-
-const { test } = require('node:test')
-const Fastify = require('fastify')
-const SwaggerUI = require('@fastify/swagger-ui')
+import { test } from 'node:test'
+import SwaggerUI from '@fastify/swagger-ui'
+import Fastify from 'fastify'
+import fastifyMultipleSwagger from '../index.js'
 
 test('should work with swagger-ui #default config', async (t) => {
   t.plan(4)
   const fastify = Fastify()
   t.after(() => fastify.close())
 
-  await fastify.register(require('..'), {
+  await fastify.register(fastifyMultipleSwagger, {
     documents: [{ documentRef: 'swagger1' }, { documentRef: 'swagger2' }],
   })
 
@@ -37,7 +36,7 @@ test('should work with swagger-ui #custom config', async (t) => {
   const fastify = Fastify()
   t.after(() => fastify.close())
 
-  await fastify.register(require('..'), {
+  await fastify.register(fastifyMultipleSwagger, {
     documents: [
       {
         documentRef: 'swagger1',
