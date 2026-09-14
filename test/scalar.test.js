@@ -1,15 +1,14 @@
-'use strict'
-
-const { test } = require('node:test')
-const Fastify = require('fastify')
-const Scalar = require('@scalar/fastify-api-reference')
+import { test } from 'node:test'
+import Scalar from '@scalar/fastify-api-reference'
+import Fastify from 'fastify'
+import fastifyMultipleSwagger from '../index.js'
 
 test('should work with scalar #default config', async (t) => {
   t.plan(5)
   const fastify = Fastify()
   t.after(() => fastify.close())
 
-  await fastify.register(require('..'), {
+  await fastify.register(fastifyMultipleSwagger, {
     documents: [{ documentRef: 'swagger1' }, { documentRef: 'swagger2' }],
   })
 
@@ -37,7 +36,7 @@ test('should work with scalar #custom config', async (t) => {
   const fastify = Fastify()
   t.after(() => fastify.close())
 
-  await fastify.register(require('..'), {
+  await fastify.register(fastifyMultipleSwagger, {
     documents: [
       {
         documentRef: 'swagger1',

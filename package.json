@@ -2,8 +2,15 @@
   "name": "fastify-multiple-swagger",
   "version": "2.1.0",
   "description": "A Fastify plugin for generating multiple Swagger/OpenAPI documents using @fastify/swagger.",
-  "type": "commonjs",
-  "main": "index.js",
+  "type": "module",
+  "main": "./index.js",
+  "exports": {
+    ".": {
+      "types": "./index.d.ts",
+      "import": "./index.js",
+      "default": "./index.js"
+    }
+  },
   "types": "index.d.ts",
   "scripts": {
     "lint": "biome check",

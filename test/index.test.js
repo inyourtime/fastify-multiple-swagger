@@ -1,16 +1,16 @@
-'use strict'
-
-const { test } = require('node:test')
-const Fastify = require('fastify')
-const Swagger = require('@apidevtools/swagger-parser')
-const yaml = require('yaml')
-const { getDecoratorName } = require('../lib/utils')
+import { test } from 'node:test'
+import Swagger from '@apidevtools/swagger-parser'
+import Fastify from 'fastify'
+import routePreset from 'fastify-route-preset'
+import yaml from 'yaml'
+import fastifyMultipleSwagger from '../index.js'
+import { getDecoratorName } from '../lib/utils.js'
 
 test('register plugin success', async (t) => {
   t.plan(1)
   const fastify = Fastify()
 
-  await fastify.register(require('..'), { documents: [] })
+  await fastify.register(fastifyMultipleSwagger, { documents: [] })
 
   t.assert.ok(fastify.hasPlugin('fastify-multiple-swagger'))
 })
@@ -20,7 +20,7 @@ test('should generate multiple documents #documentRef', async (t) => {
   const fastify = Fastify()
   t.after(() => fastify.close())
 
-  await fastify.register(require('..'), { documents: ['foo', 'bar'] })
+  await fastify.register(fastifyMultipleSwagger, { documents: ['foo', 'bar'] })
 
   fastify.get(
     '/foo',
@@ -68,7 +68,7 @@ test('should generate multiple documents #endpoint', async (t) => {
   const fastify = Fastify()
   t.after(() => fastify.close())
 
-  await fastify.register(require('..'), { documents: ['foo', 'bar'] })
+  await fastify.register(fastifyMultipleSwagger, { documents: ['foo', 'bar'] })
 
   fastify.get(
     '/foo',
@@ -118,7 +118,7 @@ test('invalid "documents" option #1', async (t) => {
   const fastify = Fastify()
 
   try {
-    await fastify.register(require('..'), { documents: 'foo' })
+    await fastify.register(fastifyMultipleSwagger, { documents: 'foo' })
   } catch (err) {
     t.assert.ok(err)
     t.assert.strictEqual(err.message, '"documents" option must be an array')
@@ -130,7 +130,7 @@ test('invalid "documents" option #2', async (t) => {
   const fastify = Fastify()
 
   try {
-    await fastify.register(require('..'), { documents: [1, 2] })
+    await fastify.register(fastifyMultipleSwagger, { documents: [1, 2] })
   } catch (err) {
     t.assert.ok(err)
     t.assert.strictEqual(err.message, '"documents" option must be an array of objects or strings')
@@ -142,7 +142,9 @@ test('"exposeRoute" option is false', async (t) => {
   const fastify = Fastify()
   t.after(() => fastify.close())
 
-  await fastify.register(require('..'), { documents: [{ documentRef: 'foo', exposeRoute: false }] })
+  await fastify.register(fastifyMultipleSwagger, {
+    documents: [{ documentRef: 'foo', exposeRoute: false }],
+  })
 
   await fastify.ready()
 
@@ -155,7 +157,7 @@ test('"exposeRoute" option is object', async (t) => {
   const fastify = Fastify()
   t.after(() => fastify.close())
 
-  await fastify.register(require('..'), {
+  await fastify.register(fastifyMultipleSwagger, {
     documents: [{ documentRef: 'foo', exposeRoute: { json: false, yaml: true } }],
   })
 
@@ -170,7 +172,7 @@ test('"exposeRoute" option with route url', async (t) => {
   const fastify = Fastify()
   t.after(() => fastify.close())
 
-  await fastify.register(require('..'), {
+  await fastify.register(fastifyMultipleSwagger, {
     documents: [
       { documentRef: 'foo', exposeRoute: { json: '/swagger.json', yaml: '/swagger.yaml' } },
     ],
@@ -187,7 +189,7 @@ test('provide "routePrefix" option', async (t) => {
   const fastify = Fastify()
   t.after(() => fastify.close())
 
-  await fastify.register(require('..'), {
+  await fastify.register(fastifyMultipleSwagger, {
     documents: [
       { documentRef: 'foo', exposeRoute: { json: '/swagger.json', yaml: '/swagger.yaml' } },
     ],
@@ -205,7 +207,7 @@ test('invalid "documentRef" option', async (t) => {
   const fastify = Fastify()
 
   try {
-    await fastify.register(require('..'), { documents: [{ documentRef: null }] })
+    await fastify.register(fastifyMultipleSwagger, { documents: [{ documentRef: null }] })
   } catch (err) {
     t.assert.ok(err)
     t.assert.strictEqual(err.message, '"documentRef" option must be a string')
@@ -217,7 +219,7 @@ test('duplicate "documentRef" option', async (t) => {
   const fastify = Fastify()
 
   try {
-    await fastify.register(require('..'), {
+    await fastify.register(fastifyMultipleSwagger, {
       documents: [{ documentRef: 'foo' }, { documentRef: 'foo' }],
     })
   } catch (err) {
@@ -231,7 +233,7 @@ test('invalid "defaultDocumentRef" option', async (t) => {
   const fastify = Fastify()
 
   try {
-    await fastify.register(require('..'), {
+    await fastify.register(fastifyMultipleSwagger, {
       documents: [{ documentRef: 'foo' }],
       defaultDocumentRef: true,
     })
@@ -246,7 +248,7 @@ test('should work with "defaultDocumentRef"', async (t) => {
   const fastify = Fastify()
   t.after(() => fastify.close())
 
-  await fastify.register(require('..'), {
+  await fastify.register(fastifyMultipleSwagger, {
     documents: [{ documentRef: 'foo' }, { documentRef: 'bar' }],
     defaultDocumentRef: 'foo',
   })
@@ -271,7 +273,7 @@ test('should work with swagger transform', async (t) => {
   const fastify = Fastify()
   t.after(() => fastify.close())
 
-  await fastify.register(require('..'), {
+  await fastify.register(fastifyMultipleSwagger, {
     documents: [
       {
         documentRef: 'foo',
@@ -295,7 +297,7 @@ test('should have decorator getDocumentSources', async (t) => {
   const fastify = Fastify()
   t.after(() => fastify.close())
 
-  await fastify.register(require('..'), {
+  await fastify.register(fastifyMultipleSwagger, {
     documents: [
       { documentRef: 'foo', exposeRoute: { json: '/swagger.json', yaml: '/swagger.yaml' } },
     ],
@@ -314,7 +316,7 @@ test('routePrefix end with slash', async (t) => {
   const fastify = Fastify()
   t.after(() => fastify.close())
 
-  await fastify.register(require('..'), {
+  await fastify.register(fastifyMultipleSwagger, {
     documents: [
       { documentRef: 'foo', exposeRoute: { json: '/swagger.json', yaml: '/swagger.yaml' } },
     ],
@@ -337,7 +339,7 @@ test('getDocumentSources with no exposeRoute', async (t) => {
   const fastify = Fastify()
   t.after(() => fastify.close())
 
-  await fastify.register(require('..'), {
+  await fastify.register(fastifyMultipleSwagger, {
     documents: [{ documentRef: 'foo', exposeRoute: false }],
   })
 
@@ -359,7 +361,7 @@ test('getDocumentSources with scalar option', async (t) => {
   const fastify = Fastify()
   t.after(() => fastify.close())
 
-  await fastify.register(require('..'), {
+  await fastify.register(fastifyMultipleSwagger, {
     documents: [
       {
         documentRef: 'foo',
@@ -394,7 +396,7 @@ test('getDocumentSources with swaggerUI option', async (t) => {
   const fastify = Fastify()
   t.after(() => fastify.close())
 
-  await fastify.register(require('..'), {
+  await fastify.register(fastifyMultipleSwagger, {
     documents: [
       {
         documentRef: 'foo',
@@ -422,7 +424,7 @@ test('getDocumentSources with invalid option', async (t) => {
   const fastify = Fastify()
   t.after(() => fastify.close())
 
-  await fastify.register(require('..'), {
+  await fastify.register(fastifyMultipleSwagger, {
     documents: [
       {
         documentRef: 'foo',
@@ -453,7 +455,7 @@ test('getDocument with valid documentRef', async (t) => {
   const fastify = Fastify()
   t.after(() => fastify.close())
 
-  await fastify.register(require('..'), {
+  await fastify.register(fastifyMultipleSwagger, {
     documents: ['foo', 'bar'],
   })
 
@@ -472,7 +474,7 @@ test('getDocument with invalid documentRef', async (t) => {
   const fastify = Fastify()
   t.after(() => fastify.close())
 
-  await fastify.register(require('..'), {
+  await fastify.register(fastifyMultipleSwagger, {
     documents: ['foo', 'bar'],
   })
 
@@ -495,7 +497,7 @@ test('getDocument with YAML option', async (t) => {
   const fastify = Fastify()
   t.after(() => fastify.close())
 
-  await fastify.register(require('..'), {
+  await fastify.register(fastifyMultipleSwagger, {
     documents: ['foo'],
   })
 
@@ -513,7 +515,7 @@ test('should work with only "documentRef" option', async (t) => {
   const fastify = Fastify()
   t.after(() => fastify.close())
 
-  await fastify.register(require('..'), {
+  await fastify.register(fastifyMultipleSwagger, {
     documents: [{ documentRef: 'foo' }],
   })
 
@@ -554,7 +556,7 @@ test('should work with "urlPrefix" option', async (t) => {
   const fastify = Fastify()
   t.after(() => fastify.close())
 
-  await fastify.register(require('..'), {
+  await fastify.register(fastifyMultipleSwagger, {
     documents: [{ documentRef: 'foo', urlPrefix: '/foo' }],
   })
 
@@ -589,7 +591,7 @@ test('should work with "routeSelector" option', async (t) => {
   const fastify = Fastify()
   t.after(() => fastify.close())
 
-  await fastify.register(require('..'), {
+  await fastify.register(fastifyMultipleSwagger, {
     documents: [
       {
         documentRef: 'foo',
@@ -633,7 +635,7 @@ test('invalid routeSelector', async (t) => {
   t.after(() => fastify.close())
 
   try {
-    await fastify.register(require('..'), {
+    await fastify.register(fastifyMultipleSwagger, {
       documents: [{ documentRef: 'foo', routeSelector: 'foo' }],
     })
   } catch (err) {
@@ -647,7 +649,7 @@ test('should work with "urlPrefix" option as array', async (t) => {
   const fastify = Fastify()
   t.after(() => fastify.close())
 
-  await fastify.register(require('..'), {
+  await fastify.register(fastifyMultipleSwagger, {
     documents: [{ documentRef: 'foo', urlPrefix: ['/foo', '/bar'] }],
   })
 
@@ -683,7 +685,7 @@ test("should error when both 'routeSelector' and 'urlPrefix' are set", async (t)
   t.after(() => fastify.close())
 
   try {
-    await fastify.register(require('..'), {
+    await fastify.register(fastifyMultipleSwagger, {
       documents: [
         {
           documentRef: 'foo',
@@ -707,7 +709,7 @@ test('invalid "urlPrefix" option', async (t) => {
   t.after(() => fastify.close())
 
   try {
-    await fastify.register(require('..'), {
+    await fastify.register(fastifyMultipleSwagger, {
       documents: [{ documentRef: 'foo', urlPrefix: 1 }],
     })
   } catch (err) {
@@ -724,7 +726,7 @@ test('should work with "fastify-route-preset" plugin', async (t) => {
   const fastify = Fastify()
   t.after(() => fastify.close())
 
-  fastify.register(require('fastify-route-preset'), {
+  fastify.register(routePreset, {
     onPresetRoute: (routeOptions, preset) => {
       routeOptions.config = {
         ...preset,
@@ -733,7 +735,7 @@ test('should work with "fastify-route-preset" plugin', async (t) => {
     },
   })
 
-  await fastify.register(require('..'), {
+  await fastify.register(fastifyMultipleSwagger, {
     documents: [{ documentRef: 'foo' }, { documentRef: 'bar' }],
   })
 
@@ -798,7 +800,7 @@ test('should work with config "documentRef" as a array', async (t) => {
   const fastify = Fastify()
   t.after(() => fastify.close())
 
-  await fastify.register(require('..'), {
+  await fastify.register(fastifyMultipleSwagger, {
     documents: [{ documentRef: 'foo' }, { documentRef: 'bar' }],
   })
 
